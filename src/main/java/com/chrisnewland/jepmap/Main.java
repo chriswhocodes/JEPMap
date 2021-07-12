@@ -11,6 +11,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -34,9 +35,13 @@ public class Main
 
 	private final Map<String, Project> projectMap = new HashMap<>();
 
+	private final Map<Integer, Set<String>> badMappings = new HashMap<>();
+
 	public static void main(String[] args) throws IOException
 	{
 		Main main = new Main();
+
+		main.loadBadMappings();
 
 		main.parseJEPs();
 
@@ -60,6 +65,54 @@ public class Main
 				throw new RuntimeException("Could not create tmp dir " + htmlCachePath);
 			}
 		}
+	}
+
+	private void loadBadMappings()
+	{
+		Properties properties = new Properties();
+
+		Path badMappingsPath = Paths.get("src/main/resources/badmappings.properties");
+
+		try
+		{
+			properties.load(new FileReader(badMappingsPath.toFile()));
+
+			for (String jepNumber : properties.stringPropertyNames())
+			{
+				String badProjectIds = properties.getProperty(jepNumber);
+
+				String[] idArray = badProjectIds.split(",");
+
+				Set<String> idSet = new HashSet<>(Arrays.asList(idArray));
+
+				System.out.println("JEP " + jepNumber + " must not map to " + Arrays.toString(idArray));
+
+				badMappings.put(Integer.parseInt(jepNumber), idSet);
+			}
+		}
+		catch (IOException e)
+		{
+			throw new RuntimeException("Couldn't load " + badMappingsPath);
+		}
+	}
+
+	private boolean isBapMapping(int jepNumber, String projectId)
+	{
+		boolean result = false;
+
+		if (badMappings.containsKey(jepNumber))
+		{
+			Set<String> projectIdSet = badMappings.get(jepNumber);
+
+			if (projectIdSet.contains(projectId) || projectIdSet.contains("*"))
+			{
+				result = true;
+			}
+		}
+
+		//System.out.println("isBadMapping: " + jepNumber + "=>" + projectId + " : " + result);
+
+		return result;
 	}
 
 	private void parseProjects() throws IOException
@@ -182,7 +235,22 @@ public class Main
 
 		for (Project project : projectList)
 		{
-			if (!project.getJeps().isEmpty())
+			Set<JEP> projectJEPs = project.getJeps();
+
+			Iterator<JEP> iterator = projectJEPs.iterator();
+
+			while (iterator.hasNext())
+			{
+				JEP jep = iterator.next();
+
+				if (isBapMapping(jep.getNumber(), project.getId()))
+				{
+					System.out.println("Removing bad mapping " + jep.getNumber() + "=>" + project.getId());
+					iterator.remove();
+				}
+			}
+
+			if (!projectJEPs.isEmpty())
 			{
 				System.out.println("------------------------------PROJECT: " + project.getName() + " (" + project.getId() + ")");
 
