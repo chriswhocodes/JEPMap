@@ -23,6 +23,10 @@ h2 {
     padding: 4px 0px 4px 16px;
 }
 
+.jepstatus {
+    font-size: smaller;
+}
+
 .description {
     font-style: italic;
 }
@@ -55,4 +59,11 @@ ol {
 
 .clear {
     clear: both;
+}
+
+.warn {
+    font-style: italic;
+    color:red;
+    font-weight: bold;
+    padding-bottom: 8px;
 }

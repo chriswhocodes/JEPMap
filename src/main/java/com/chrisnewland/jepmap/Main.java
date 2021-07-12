@@ -208,7 +208,7 @@ public class Main
 								  .append(project.getWikiURL())
 								  .append("\">")
 								  .append(project.getWikiURL())
-								  .append(")");
+								  .append("</a>)");
 				}
 
 				builderProject.append("</div>\n");
@@ -236,7 +236,12 @@ public class Main
 								  .append(jep.getNumber())
 								  .append(": ")
 								  .append(jep.getName())
-								  .append("</a></div>\n");
+								  .append("</a><div class=\"jepstatus\">");
+					builderProject.append("[Status: ").append(jep.getStatus());
+					builderProject.append("] [Updated: ").append(jep.getUpdated().substring(0, 10));
+					builderProject.append("</span>");
+
+					builderProject.append("]</div></div>\n");
 
 					System.out.println(jep);
 				}
@@ -247,7 +252,7 @@ public class Main
 			}
 		}
 
-		String template = new String(Files.readAllBytes(Paths.get("src/main/resources/projects.html")), StandardCharsets.UTF_8);
+		String template = new String(Files.readAllBytes(Paths.get("src/main/resources/template.html")), StandardCharsets.UTF_8);
 
 		template = template.replace("%JUMP%", builderJump.toString());
 
