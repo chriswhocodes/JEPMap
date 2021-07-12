@@ -19,6 +19,7 @@ public class JEP
 
 	private final Set<Integer> related = new HashSet<>();
 	private final Set<Integer> depends = new HashSet<>();
+	private final Set<String> projectIds = new HashSet<>();
 
 	public JEP(String name, int number)
 	{
@@ -26,8 +27,7 @@ public class JEP
 
 		String prefix = "JEP " + number + ":";
 
-		this.name = name.substring(prefix.length())
-						.trim();
+		this.name = name.replace(prefix, "").replace("JEP XXX:", "");
 	}
 
 	public String getName()
@@ -112,14 +112,22 @@ public class JEP
 		this.discussion = discussion;
 	}
 
-	@Override
-	public String toString()
+	public void addProjectId(String projectId)
+	{
+		projectIds.add(projectId);
+	}
+
+	public Set<String> getProjectIds()
+	{
+		return projectIds;
+	}
+
+	@Override public String toString()
 	{
 		return number + " => " + name + " (" + status + ")";
 	}
 
-	@Override
-	public boolean equals(Object o)
+	@Override public boolean equals(Object o)
 	{
 		if (this == o)
 			return true;
@@ -129,8 +137,7 @@ public class JEP
 		return number == jep.number && name.equals(jep.name);
 	}
 
-	@Override
-	public int hashCode()
+	@Override public int hashCode()
 	{
 		return Objects.hash(name, number);
 	}

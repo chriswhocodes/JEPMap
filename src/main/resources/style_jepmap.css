@@ -7,14 +7,14 @@ h2 {
 }
 
 .project {
-    border: solid 1px black;
+    border: solid 1px gray;
     background-color: lavender;
     margin: 16px;
     padding: 8px;
 }
 
 .jeps {
-    border: solid 1px black;
+    border: solid 1px gray;
     background-color: khaki;
     padding: 8px;
 }
@@ -37,4 +37,22 @@ ol {
 
 .intro > div {
     font-weight: bold;
+}
+
+.jump_container {
+
+}
+
+
+.jump {
+    border: 1px solid gray;
+    float: left;
+    clear: none;
+    margin: 4px;
+    padding: 4px 8px;
+    background-color: lavender;
+}
+
+.clear {
+    clear: both;
 }

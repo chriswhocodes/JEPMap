@@ -20,6 +20,8 @@ import java.util.*;
 
 public class Main
 {
+	private static final String URL_OPENJDK_ROOT = "https://openjdk.java.net/";
+
 	private static final String URL_JEPS = "https://openjdk.java.net/jeps/";
 
 	private static final String URL_PROJECT = "https://openjdk.java.net/projects/";
@@ -42,7 +44,7 @@ public class Main
 
 		main.parseProjectsJDK();
 
-		main.associateByDiscussion();
+		main.associateJEPsToProjects();
 
 		main.report();
 	}
@@ -64,9 +66,7 @@ public class Main
 	{
 		System.out.println("parseProjects()");
 
-		String url = "https://openjdk.java.net/";
-
-		Document doc = loadHTML(url);
+		Document doc = loadHTML(URL_OPENJDK_ROOT);
 
 		Element leftSidebar = doc.select("div[id=sidebar]").first();
 
@@ -83,7 +83,7 @@ public class Main
 			{
 				//System.out.println(link + "=>" + projectName);
 
-				String projectId = link.substring("/projects/".length());
+				String projectId = link.substring("/projects/".length()).toLowerCase();
 
 				if (!projectId.isEmpty())
 				{
@@ -176,7 +176,9 @@ public class Main
 			}
 		});
 
-		StringBuilder builder = new StringBuilder();
+		StringBuilder builderJump = new StringBuilder();
+
+		StringBuilder builderProject = new StringBuilder();
 
 		for (Project project : projectList)
 		{
@@ -184,15 +186,32 @@ public class Main
 			{
 				System.out.println("------------------------------PROJECT: " + project.getName() + " (" + project.getId() + ")");
 
-				builder.append("<div class=\"project\">\n");
-				builder.append("<h2><a href=\"")
-					   .append(URL_PROJECT)
-					   .append(project.getId())
-					   .append("\">")
-					   .append(project.getName())
-					   .append("</a></h2>\n");
+				builderJump.append("<div class=\"jump\"><a href=\"#")
+						   .append(project.getId())
+						   .append("\">")
+						   .append(project.getName())
+						   .append("</a></div>");
 
-				builder.append("<div class=\"description\">").append(project.getDescription()).append("</div>\n");
+				builderProject.append("<div class=\"project\" id=\"").append(project.getId()).append("\">\n");
+				builderProject.append("<h2><a href=\"")
+							  .append(URL_PROJECT)
+							  .append(project.getId())
+							  .append("\">")
+							  .append(project.getName())
+							  .append("</a></h2>\n");
+
+				builderProject.append("<div class=\"description\">").append(project.getDescription());
+
+				if (project.getDescription().toLowerCase().contains("wiki"))
+				{
+					builderProject.append(" (<a href=\"")
+								  .append(project.getWikiURL())
+								  .append("\">")
+								  .append(project.getWikiURL())
+								  .append(")");
+				}
+
+				builderProject.append("</div>\n");
 
 				List<JEP> jepList = new ArrayList<>(project.getJeps());
 
@@ -204,33 +223,35 @@ public class Main
 					}
 				});
 
-				builder.append("<h3>JEPS</h3>\n");
+				builderProject.append("<h3>JEPS</h3>\n");
 
-				builder.append("<div class=\"jeps\">\n");
+				builderProject.append("<div class=\"jeps\">\n");
 
 				for (JEP jep : jepList)
 				{
-					builder.append("<div class=\"jep\"><a href=\"")
-						   .append(URL_JEPS)
-						   .append(jep.getNumber())
-						   .append("\">JEP ")
-						   .append(jep.getNumber())
-						   .append(": ")
-						   .append(jep.getName())
-						   .append("</a></div>\n");
+					builderProject.append("<div class=\"jep\"><a href=\"")
+								  .append(URL_JEPS)
+								  .append(jep.getNumber())
+								  .append("\">JEP ")
+								  .append(jep.getNumber())
+								  .append(": ")
+								  .append(jep.getName())
+								  .append("</a></div>\n");
 
 					System.out.println(jep);
 				}
 
-				builder.append("</div>\n");
+				builderProject.append("</div>\n");
 
-				builder.append("</div>\n");
+				builderProject.append("</div>\n");
 			}
 		}
 
 		String template = new String(Files.readAllBytes(Paths.get("src/main/resources/projects.html")), StandardCharsets.UTF_8);
 
-		template = template.replace("%BODY%", builder.toString());
+		template = template.replace("%JUMP%", builderJump.toString());
+
+		template = template.replace("%BODY%", builderProject.toString());
 
 		Files.write(Paths.get("src/main/resources/jepmap.html"), template.getBytes(StandardCharsets.UTF_8));
 	}
@@ -314,11 +335,11 @@ public class Main
 
 	private int getNumberFromJEPLink(String link)
 	{
+		//System.out.println("getNumberFromJEPLink: " + link);
+
 		String[] parts = link.split("/");
 
 		String last = parts[parts.length - 1];
-
-		//System.out.println("getNumberFromJEPLink: " + link);
 
 		if (last.indexOf('#') != -1)
 		{
@@ -328,21 +349,71 @@ public class Main
 		return Integer.parseInt(last);
 	}
 
+	private String getProjectIdFromLink(String link)
+	{
+		System.out.println("getProjectIdFromLink: " + link);
+
+		String[] parts = link.split("/");
+
+		boolean lastPartWasProjects = false;
+
+		String projectId = null;
+
+		for (String part : parts)
+		{
+			if ("projects".equals(part))
+			{
+				lastPartWasProjects = true;
+				continue;
+			}
+
+			if (lastPartWasProjects)
+			{
+				projectId = part;
+				break;
+			}
+		}
+
+		if (projectId != null && projectId.indexOf('#') != -1)
+		{
+			projectId = projectId.substring(0, projectId.indexOf('#'));
+		}
+
+		System.out.println("getProjectIdFromLink got: " + projectId);
+
+		return projectId;
+	}
+
 	private void parseJEPs() throws IOException
 	{
-		int max = 415;
+		Document documentJEPs = loadHTML(URL_JEPS);
 
-		for (int i = 0; i <= max; i++)
+		Elements jepTables = documentJEPs.select("table[class=jeps]");
+
+		for (Element jepTable : jepTables)
 		{
-			try
-			{
-				JEP jep = parseJEP(i);
+			Elements hrefElements = jepTable.select("a[href]");
 
-				jepMap.put(i, jep);
-			}
-			catch (Exception e)
+			for (Element hrefElement : hrefElements)
 			{
-				System.out.println("Couldn't load JEP " + i);
+				String link = hrefElement.attr("href");
+
+				System.out.println("JEP link: " + link);
+
+				try
+				{
+					int jepNumber = Integer.parseInt(link);
+
+					System.out.println("looking for " + link);
+
+					JEP jep = parseJEP(jepNumber);
+
+					jepMap.put(jepNumber, jep);
+				}
+				catch (Exception e)
+				{
+					System.out.println("Couldn't load JEP " + link);
+				}
 			}
 		}
 	}
@@ -433,6 +504,24 @@ public class Main
 			}
 		}
 
+		Element markdown = doc.select("div[class=markdown]").first();
+
+		Elements hrefElements = markdown.select("a[href]");
+
+		for (Element hrefElement : hrefElements)
+		{
+			String link = hrefElement.attr("href");
+
+			if (linkIsProject(link))
+			{
+				String projectId = getProjectIdFromLink(link);
+
+				System.out.println("Found project link in JEP:" + projectId);
+
+				jep.addProjectId(projectId);
+			}
+		}
+
 		return jep;
 	}
 
@@ -456,7 +545,7 @@ public class Main
 		throw new RuntimeException("Could not parse number from description:" + name);
 	}
 
-	private void associateByDiscussion()
+	private void associateJEPsToProjects()
 	{
 		for (JEP jep : jepMap.values())
 		{
@@ -469,7 +558,7 @@ public class Main
 				discussion = discussion.replace(" dash ", "-").replace(" at ", "@").replace(" dot ", ".");
 
 				discussion = discussion.replace("-dev", "");
-				
+
 				String projectId = discussion.substring(0, discussion.indexOf('@'));
 
 				System.out.println(jep + " discussed on " + projectId);
@@ -484,12 +573,31 @@ public class Main
 					}
 				}
 			}
+
+			Set<String> projectIds = jep.getProjectIds();
+
+			for (String projectId : projectIds)
+			{
+				System.out.println("Checking projectId " + projectId + " for " + jep);
+
+				if (projectMap.containsKey(projectId))
+				{
+					Project project = projectMap.get(projectId);
+
+					System.out.println("Found project: " + project.getName());
+
+					if (project != null)
+					{
+						project.addJEP(jep);
+					}
+				}
+			}
 		}
 	}
 
 	private boolean linkIsProject(String url)
 	{
-		return !"/projects/".equals(url) && url.contains("/projects/") && !url.contains("/projects/jdk");
+		return url.contains("/projects/") && !"/projects/".equals(url) && !url.contains("/projects/jdk");
 	}
 
 	private boolean linkIsJEP(String url)

@@ -8,17 +8,22 @@
 <body>
 <h1>OpenJDK Project JEPs (JDK Enhancement Proposals)</h1>
 <div class="intro">
-    <div>Built using <a href="https://github.com/chriswhocodes/JEPMap">JEPMap</a> by <a href="https://twitter.com/chriswhocodes">@chriswhocodes</a>. The algorithm for generating this page is:</div>
+    <div>Built using <a href="https://github.com/chriswhocodes/JEPMap">JEPMap</a> by <a href="https://twitter.com/chriswhocodes">@chriswhocodes</a>.
+        The algorithm for generating this page is:
+    </div>
     <ol>
         <li>Parse the JEP pages at <a href="https://openjdk.java.net/jeps/">https://openjdk.java.net/jeps</a></li>
         <li>For each Project listed at <a href="https://openjdk.java.net/projects/">https://openjdk.java.net/projects/</a>
             <ol>
                 <li>Parse the project page and wiki page looking for JEP URLs</li>
-                <li>Check if the JEP page discussion mailing list refers back to a Project</li>
+                <li>Check if the JEP page discussion mailing list name matches a Project</li>
+                <li>Check if the JEP page text links to a Project</li>
             </ol>
         </li>
     </ol>
 </div>
+<div class="jump_container">%JUMP%</div>
+<div class="clear"></div>
 %BODY%
 </body>
 </html>
