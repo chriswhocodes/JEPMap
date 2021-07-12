@@ -1,0 +1,40 @@
+body {
+    font-family: Arial;
+}
+
+h2 {
+    margin-top: 4px;
+}
+
+.project {
+    border: solid 1px black;
+    background-color: lavender;
+    margin: 16px;
+    padding: 8px;
+}
+
+.jeps {
+    border: solid 1px black;
+    background-color: khaki;
+    padding: 8px;
+}
+
+.jep {
+    padding: 4px 0px 4px 16px;
+}
+
+.description {
+    font-style: italic;
+}
+
+li {
+    padding: 4px;
+}
+
+ol {
+    padding-top: 4px;
+}
+
+.intro > div {
+    font-weight: bold;
+}
