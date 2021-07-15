@@ -164,6 +164,34 @@ public class Main
 		}
 	}
 
+	private String getProjectIdForJDK(int jdk)
+	{
+		return "jdk" + (jdk >= 10 ? "/" : "") + jdk;
+	}
+
+	private int getJDKMajorVersionFromReleaseVersion(String releaseVersion)
+	{
+		int lastMajorChar;
+
+		for (lastMajorChar = 0; lastMajorChar < releaseVersion.length(); lastMajorChar++)
+		{
+			char c = releaseVersion.charAt(lastMajorChar);
+
+			if (!Character.isDigit(c))
+			{
+				break;
+			}
+		}
+
+		System.out.println("Substring 0-" + lastMajorChar + " from " + releaseVersion);
+
+		int result = Integer.parseInt(releaseVersion.substring(0, lastMajorChar));
+
+		System.out.println("Got major version " + result + " from " + releaseVersion);
+
+		return result;
+	}
+
 	private void parseProjectsJDK()
 	{
 		System.out.println("parseProjectsJDK()");
@@ -176,7 +204,7 @@ public class Main
 		{
 			String projectName = "JDK" + jdk;
 
-			String projectId = "jdk" + (jdk >= 10 ? "/" : "") + jdk;
+			String projectId = getProjectIdForJDK(jdk);
 
 			Project project = new Project(projectId, projectName);
 
@@ -635,6 +663,27 @@ public class Main
 				String projectId = discussion.substring(0, discussion.indexOf('@'));
 
 				System.out.println(jep + " discussed on " + projectId);
+
+				if (projectMap.containsKey(projectId))
+				{
+					Project project = projectMap.get(projectId);
+
+					if (project != null)
+					{
+						project.addJEP(jep);
+					}
+				}
+			}
+
+			String release = jep.getRelease();
+
+			if (release != null && !release.isEmpty() && !"tbd".equals(release))
+			{
+				int jdkMajorVersion = getJDKMajorVersionFromReleaseVersion(release);
+
+				String projectId = getProjectIdForJDK(jdkMajorVersion);
+
+				System.out.println(jep + " released in " + projectId);
 
 				if (projectMap.containsKey(projectId))
 				{
