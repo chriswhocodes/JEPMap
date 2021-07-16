@@ -333,6 +333,10 @@ public class Main
 								  .append(": ")
 								  .append(jep.getName())
 								  .append("</a><div class=\"jepstatus\">");
+					if (jep.getRelease() != null)
+					{
+						builderProject.append("[Release: ").append(jep.getRelease()).append("] ");
+					}
 					builderProject.append("[Status: ").append(jep.getStatus());
 					builderProject.append("] [Updated: ").append(jep.getUpdated().substring(0, 10));
 					builderProject.append("</span>");
