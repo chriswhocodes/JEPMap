@@ -17,6 +17,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.time.DateTimeException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Main
@@ -282,7 +287,7 @@ public class Main
 			{
 				System.out.println("------------------------------PROJECT: " + project.getName() + " (" + project.getId() + ")");
 
-				builderJump.append("<div class=\"jump\"><a href=\"#")
+				builderJump.append("\n<div class=\"jump\"><a href=\"#")
 						   .append(project.getId())
 						   .append("\">")
 						   .append(project.getName())
@@ -339,7 +344,6 @@ public class Main
 					}
 					builderProject.append("[Status: ").append(jep.getStatus());
 					builderProject.append("] [Updated: ").append(jep.getUpdated().substring(0, 10));
-					builderProject.append("</span>");
 
 					builderProject.append("]</div></div>\n");
 
@@ -353,6 +357,10 @@ public class Main
 		}
 
 		String template = new String(Files.readAllBytes(Paths.get("src/main/resources/template.html")), StandardCharsets.UTF_8);
+
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_DATE;
+
+		template = template.replace("%UPDATED%", dateTimeFormatter.format(LocalDateTime.now()));
 
 		template = template.replace("%JUMP%", builderJump.toString());
 

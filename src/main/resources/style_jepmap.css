@@ -1,26 +1,26 @@
 body {
-    font-family: Arial;
+    font-family: sans-serif;
 }
 
 h2 {
     margin-top: 4px;
 }
 
-.project {
+.project, .algo {
     border: solid 1px gray;
     background-color: lavender;
-    margin: 16px;
+    margin: 16px 0px;
     padding: 8px;
 }
 
-.jeps {
+.jeps, .jump_container {
     border: solid 1px gray;
     background-color: khaki;
     padding: 8px;
 }
 
 .jep {
-    padding: 4px 0px 4px 16px;
+    padding: 4px 0px 4px 8px;
 }
 
 .jepstatus {
@@ -35,18 +35,10 @@ li {
     padding: 4px;
 }
 
-ol {
-    padding-top: 4px;
-}
-
 .intro > div {
     font-weight: bold;
+    margin-bottom: 8px;
 }
-
-.jump_container {
-
-}
-
 
 .jump {
     border: 1px solid gray;
@@ -55,6 +47,7 @@ ol {
     margin: 4px;
     padding: 4px 8px;
     background-color: lavender;
+    font-weight: bolder;
 }
 
 .clear {
@@ -63,7 +56,25 @@ ol {
 
 .warn {
     font-style: italic;
-    color:red;
+    color: red;
     font-weight: bold;
     padding-bottom: 8px;
+}
+
+h1
+{
+    margin: 8px 0px;
+}
+
+.sponsor {
+    margin-bottom: 8px;
+    border-radius: 8px;
+    padding: 8px;
+    white-space: nowrap;
+    background-color: #aaffaa;
+}
+
+.sponsor a {
+    color: blue;
+    font-size: 18px;
 }

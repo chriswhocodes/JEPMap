@@ -7,11 +7,18 @@
 </head>
 <body>
 <h1>OpenJDK Project JEPs (JDK Enhancement Proposals)</h1>
-<div class="warn">This is an alpha release and the tool generates some false positives which I am working to eliminate!</div>
+<a href="https://github.com/sponsors/chriswhocodes">
+    <button class="sponsor">
+        Sponsor me on GitHub!
+    </button>
+</a>
 <div class="intro">
-    <div>Built using <a href="https://github.com/chriswhocodes/JEPMap">JEPMap</a> by <a href="https://twitter.com/chriswhocodes">@chriswhocodes</a>.
-        The algorithm for generating this page is:
+    <div>Built using <a href="https://github.com/chriswhocodes/JEPMap">JEPMap</a> by <a
+            href="https://twitter.com/chriswhocodes">@chriswhocodes</a>.
+        Last updated: %UPDATED%
     </div>
+</div>
+<div class="algo">The algorithm for generating this page is:
     <ol>
         <li>Parse the JEP pages at <a href="https://openjdk.java.net/jeps/">https://openjdk.java.net/jeps</a></li>
         <li>For each Project listed at <a href="https://openjdk.java.net/projects/">https://openjdk.java.net/projects/</a>
@@ -19,14 +26,23 @@
                 <li>Parse the project page and wiki page looking for JEP URLs</li>
                 <li>Check if the JEP page discussion mailing list name matches a Project</li>
                 <li>Check if the JEP page text links to a Project</li>
-                <li>Map JEP 'Release' tag back to a JDK (technically a JDK is not a Project but I think it's useful to list the JEPs targeted to a JDK)</li>
-                <li>Remove mappings found in the <a href="https://github.com/chriswhocodes/JEPMap/blob/main/src/main/resources/badmappings.properties">banlist</a></li>
+                <li>Map JEP 'Release' tag back to a JDK (technically a JDK is not a Project but I think it's useful to list the
+                    JEPs
+                    targeted to a JDK)
+                </li>
+                <li>Remove mappings found in the <a
+                        href="https://github.com/chriswhocodes/JEPMap/blob/main/src/main/resources/badmappings.properties">banlist</a>
+                </li>
             </ol>
         </li>
     </ol>
+    <div class="warn">Autogeneration can produce false positives! Please report issues at <a
+            href="https://github.com/chriswhocodes/JEPMap/issues">https://github.com/chriswhocodes/JEPMap/issues</a></div>
 </div>
-<div class="jump_container">%JUMP%</div>
-<div class="clear"></div>
+<div class="jump_container">
+    %JUMP%
+    <div class="clear"></div>
+</div>
 %BODY%
 </body>
 </html>
