@@ -30,6 +30,12 @@ public class Project
 
 	public void addJEP(JEP jep)
 	{
+		if (jep == null)
+		{
+			Thread.dumpStack();
+			System.exit(-1);
+		}
+
 		if (!jepSet.contains(jep))
 		{
 			jepSet.add(jep);

@@ -16,6 +16,7 @@ public class JEP
 	private String updated;
 	private String release;
 	private String discussion;
+	private String issue;
 
 	private final Set<Integer> related = new HashSet<>();
 	private final Set<Integer> depends = new HashSet<>();
@@ -117,6 +118,21 @@ public class JEP
 		projectIds.add(projectId);
 	}
 
+	public void removeProjectId(String projectId)
+	{
+		projectIds.remove(projectId);
+	}
+
+	public void setIssue(String issue)
+	{
+		this.issue = issue;
+	}
+
+	public String getIssue()
+	{
+		return issue;
+	}
+
 	public Set<String> getProjectIds()
 	{
 		return projectIds;
@@ -124,7 +140,7 @@ public class JEP
 
 	@Override public String toString()
 	{
-		return number + " => " + name + " (" + status + ")";
+		return number + " => " + name + " (status: " + status + ")";
 	}
 
 	@Override public boolean equals(Object o)
@@ -140,5 +156,80 @@ public class JEP
 	@Override public int hashCode()
 	{
 		return Objects.hash(name, number);
+	}
+
+	public String toHtmlValueRow()
+	{
+		String bugLink = "";
+
+		if (issue != null)
+		{
+			bugLink = makeLink("https://bugs.openjdk.java.net/browse/JDK-" + issue, issue);
+		}
+
+		StringBuilder builder = new StringBuilder();
+
+		builder.append("<tr id=\"").append(number).append("\">");
+		builder.append("<td>").append(makeJEPLink(number, number)).append("</td>");
+		builder.append("<td>").append(makeJEPLink(number, getValueOrEmpty(name))).append("</td>");
+		builder.append("<td>").append(bugLink).append("</td>");
+		builder.append("<td>").append(getValueOrEmpty(status)).append("</td>");
+		builder.append("<td>").append(getValueOrEmpty(created).substring(0, 10)).append("</td>");
+		builder.append("<td>").append(getValueOrEmpty(updated).substring(0, 10)).append("</td>");
+		builder.append("<td>").append(getValueOrEmpty(release)).append("</td>");
+		builder.append("<td>").append(getSafeEmail(getValueOrEmpty(discussion))).append("</td>");
+
+		builder.append("<td>").append(setToString(related, "#")).append("</td>");
+		builder.append("<td>").append(setToString(depends, "#")).append("</td>");
+		builder.append("<td>").append(setToString(projectIds, "jepmap.html#")).append("</td>");
+
+		builder.append("</tr>");
+		return builder.toString();
+	}
+
+	private String makeLink(String url, String text)
+	{
+		return "<a href=\"" + url + "\">" + text + "</a>";
+	}
+
+	private String makeJEPLink(int number, Object text)
+	{
+		return makeLink(Main.URL_JEPS + number, text.toString());
+	}
+
+	private String getSafeEmail(String listName)
+	{
+		int atPos = listName.indexOf(" at ");
+
+		if (atPos != -1)
+		{
+			listName = listName.substring(0, atPos).replace("dash", "-").replace(" ", "");
+		}
+
+		return listName;
+	}
+
+	private String getValueOrEmpty(String str)
+	{
+		return (str == null) ? "" : str;
+	}
+
+	private String setToString(Set<?> set, String linkPrefix)
+	{
+		StringBuilder builder = new StringBuilder();
+
+		for (Object obj : set)
+		{
+			String link = makeLink(linkPrefix + obj, obj.toString());
+
+			builder.append(link).append(", ");
+		}
+
+		if (builder.length() > 2)
+		{
+			builder.delete(builder.length() - 2, builder.length() - 1);
+		}
+
+		return builder.toString();
 	}
 }

@@ -1,5 +1,6 @@
 body {
     font-family: sans-serif;
+    font-size: 14px;
 }
 
 h2 {
@@ -66,15 +67,14 @@ h1
     margin: 8px 0px;
 }
 
-.sponsor {
-    margin-bottom: 8px;
-    border-radius: 8px;
-    padding: 8px;
-    white-space: nowrap;
-    background-color: #aaffaa;
+.dataTables_filter {
+    float: left !important;
+    font-size: 24px;
 }
 
-.sponsor a {
-    color: blue;
-    font-size: 18px;
+.dataTables_filter input {
+    height: 32px;
+    width: 600px;
+    font-size: 24px;
+    border: 2px solid black;
 }

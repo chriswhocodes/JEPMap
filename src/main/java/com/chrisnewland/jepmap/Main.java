@@ -17,9 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.time.DateTimeException;
-import java.time.Instant;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -28,7 +26,7 @@ public class Main
 {
 	private static final String URL_OPENJDK_ROOT = "https://openjdk.java.net/";
 
-	private static final String URL_JEPS = "https://openjdk.java.net/jeps/";
+	public static final String URL_JEPS = "https://openjdk.java.net/jeps/";
 
 	private static final String URL_PROJECT = "https://openjdk.java.net/projects/";
 
@@ -56,7 +54,11 @@ public class Main
 
 		main.associateJEPsToProjects();
 
+		main.cleanBadMappings();
+
 		main.report();
+
+		main.buildTable();
 	}
 
 	public Main()
@@ -97,7 +99,7 @@ public class Main
 		}
 		catch (IOException e)
 		{
-			throw new RuntimeException("Couldn't load " + badMappingsPath);
+			throw new RuntimeException("Couldn't load mappings: " + badMappingsPath);
 		}
 	}
 
@@ -234,6 +236,34 @@ public class Main
 		}
 	}
 
+	private void cleanBadMappings()
+	{
+		for (Project project : projectMap.values())
+		{
+			Set<JEP> projectJEPs = project.getJeps();
+
+			Iterator<JEP> iterator = projectJEPs.iterator();
+
+			System.out.println(project.getId() + " before clean: " + projectJEPs.size());
+
+			while (iterator.hasNext())
+			{
+				JEP jep = iterator.next();
+
+				if (isBapMapping(jep.getNumber(), project.getId()))
+				{
+					System.out.println("Removing bad mapping JEP: " + jep.getNumber() + " Project: " + project.getId());
+					iterator.remove();
+
+					jep.removeProjectId(project.getId());
+				}
+			}
+
+			System.out.println(project.getId() + " after clean: " + projectJEPs.size());
+
+		}
+	}
+
 	private void report() throws IOException
 	{
 		List<Project> projectList = new ArrayList<>(projectMap.values());
@@ -270,19 +300,6 @@ public class Main
 		{
 			Set<JEP> projectJEPs = project.getJeps();
 
-			Iterator<JEP> iterator = projectJEPs.iterator();
-
-			while (iterator.hasNext())
-			{
-				JEP jep = iterator.next();
-
-				if (isBapMapping(jep.getNumber(), project.getId()))
-				{
-					System.out.println("Removing bad mapping " + jep.getNumber() + "=>" + project.getId());
-					iterator.remove();
-				}
-			}
-
 			if (!projectJEPs.isEmpty())
 			{
 				System.out.println("------------------------------PROJECT: " + project.getName() + " (" + project.getId() + ")");
@@ -303,13 +320,20 @@ public class Main
 
 				builderProject.append("<div class=\"description\">").append(project.getDescription());
 
-				if (project.getDescription().toLowerCase().contains("wiki"))
+				if (project.getDescription() != null)
 				{
-					builderProject.append(" (<a href=\"")
-								  .append(project.getWikiURL())
-								  .append("\">")
-								  .append(project.getWikiURL())
-								  .append("</a>)");
+					if (project.getDescription().toLowerCase().contains("wiki"))
+					{
+						builderProject.append(" (<a href=\"")
+									  .append(project.getWikiURL())
+									  .append("\">")
+									  .append(project.getWikiURL())
+									  .append("</a>)");
+					}
+				}
+				else
+				{
+					System.out.println("WARN: missing description on project " + project.getId());
 				}
 
 				builderProject.append("</div>\n");
@@ -324,7 +348,7 @@ public class Main
 					}
 				});
 
-				builderProject.append("<h3>JEPS</h3>\n");
+				builderProject.append("<h3>JEPs</h3>\n");
 
 				builderProject.append("<div class=\"jeps\">\n");
 
@@ -356,7 +380,9 @@ public class Main
 			}
 		}
 
-		String template = new String(Files.readAllBytes(Paths.get("src/main/resources/template.html")), StandardCharsets.UTF_8);
+		String template = getFile("template.html");
+
+		template = template.replace("%TOPMENU%", getFile("menu.html"));
 
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_DATE;
 
@@ -367,6 +393,43 @@ public class Main
 		template = template.replace("%BODY%", builderProject.toString());
 
 		Files.write(Paths.get("src/main/resources/jepmap.html"), template.getBytes(StandardCharsets.UTF_8));
+	}
+
+	private void buildTable() throws IOException
+	{
+		StringBuilder builder = new StringBuilder();
+
+		List<JEP> jepList = new ArrayList<>(jepMap.values());
+
+		Collections.sort(jepList, new Comparator<JEP>()
+		{
+			@Override public int compare(JEP j1, JEP j2)
+			{
+				return Integer.compare(j1.getNumber(), j2.getNumber());
+			}
+		});
+
+		for (JEP jep : jepList)
+		{
+			builder.append(jep.toHtmlValueRow()).append("\n");
+		}
+
+		String template = getFile("table.html");
+
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_DATE;
+
+		template = template.replace("%UPDATED%", dateTimeFormatter.format(LocalDateTime.now()));
+
+		template = template.replace("%TOPMENU%", getFile("menu.html"));
+
+		template = template.replace("%BODY%", builder.toString());
+
+		Files.write(Paths.get("src/main/resources/jepsearch.html"), template.getBytes(StandardCharsets.UTF_8));
+	}
+
+	private String getFile(String filename) throws IOException
+	{
+		return new String(Files.readAllBytes(Paths.get("src/main/resources/", filename)), StandardCharsets.UTF_8);
 	}
 
 	private Document loadHTML(String url) throws IOException
@@ -409,7 +472,7 @@ public class Main
 
 	private void parseProject(Project project, String url, boolean parseDescription) throws IOException
 	{
-		//System.out.println("parseProject(" + url + ")");
+		System.out.println("parseProject(" + url + ")");
 
 		Document doc = loadHTML(url);
 
@@ -437,7 +500,7 @@ public class Main
 			{
 				int jepNumber = getNumberFromJEPLink(link);
 
-				//System.out.println("Got JEP number " + jepNumber + " from " + link);
+				System.out.println("Got JEP number " + jepNumber + " from " + link);
 
 				JEP jep = jepMap.get(jepNumber);
 
@@ -465,6 +528,8 @@ public class Main
 	private String getProjectIdFromLink(String link)
 	{
 		System.out.println("getProjectIdFromLink: " + link);
+
+		link = link.replace("%5D", "");
 
 		String[] parts = link.split("/");
 
@@ -526,6 +591,9 @@ public class Main
 				catch (Exception e)
 				{
 					System.out.println("Couldn't load JEP " + link);
+
+					e.printStackTrace();
+					System.exit(-1);
 				}
 			}
 		}
@@ -559,9 +627,11 @@ public class Main
 			if (tdElements.size() == 2)
 			{
 				String key = tdElements.get(0).text();
-				String value = tdElements.get(1).text();
 
-				System.out.println(key + "=>" + value);
+				Element valueElementTd = tdElements.get(1);
+				String valueText = valueElementTd.text();
+
+				System.out.println(key + "=>" + valueText);
 
 				if ("Relates to".equals(key))
 				{
@@ -583,36 +653,56 @@ public class Main
 
 				if (inRelated)
 				{
-					int related = getNumberFromJEPName(value);
+					String hrefJEP = valueElementTd.child(0).attr("href");
 
-					jep.addRelated(related);
+					try
+					{
+						int related = Integer.parseInt(hrefJEP);
+
+						jep.addRelated(related);
+					}
+					catch (NumberFormatException nfe)
+					{
+					}
 				}
 				else if (inDepends)
 				{
-					int depends = getNumberFromJEPName(value);
+					String hrefJEP = valueElementTd.child(0).attr("href");
 
-					jep.addDepends(depends);
+					try
+					{
+						int depends = Integer.parseInt(hrefJEP);
+
+						jep.addDepends(depends);
+					}
+					catch (NumberFormatException nfe)
+					{
+					}
 				}
 
 				if ("Discussion".equals(key))
 				{
-					jep.setDiscussion(value);
+					jep.setDiscussion(valueText);
 				}
 				else if ("Status".equals(key))
 				{
-					jep.setStatus(value);
+					jep.setStatus(valueText);
 				}
 				else if ("Created".equals(key))
 				{
-					jep.setCreated(value);
+					jep.setCreated(valueText);
 				}
 				else if ("Updated".equals(key))
 				{
-					jep.setUpdated(value);
+					jep.setUpdated(valueText);
 				}
 				else if ("Release".equals(key))
 				{
-					jep.setRelease(value);
+					jep.setRelease(valueText);
+				}
+				else if ("Issue".equals(key))
+				{
+					jep.setIssue(valueText);
 				}
 			}
 		}
@@ -637,26 +727,53 @@ public class Main
 
 		return jep;
 	}
-
-	private int getNumberFromJEPName(String name)
-	{
-		name = name.replace(":", "");
-
-		String[] parts = name.split(" ");
-
-		for (String part : parts)
-		{
-			try
-			{
-				return Integer.parseInt(part);
-			}
-			catch (NumberFormatException nfe)
-			{
-			}
-		}
-
-		throw new RuntimeException("Could not parse number from description:" + name);
-	}
+	//
+	//	private int getNumberFromJEPName(String name)
+	//	{
+	//		System.out.println("getNumberFromJEPName: " + name);
+	//
+	//		int posJEP = name.indexOf("JEP ");
+	//
+	//		if (posJEP != -1)
+	//		{
+	//			posJEP += 4;
+	//
+	//			StringBuilder numberPart = new StringBuilder();
+	//
+	//			int endPos = posJEP;
+	//
+	//			while (endPos < name.length())
+	//			{
+	//				char c = name.charAt(endPos++);
+	//
+	//				System.out.println("getNumberFromJEPName: checking " + c);
+	//
+	//				if (!Character.isDigit(c))
+	//				{
+	//					break;
+	//				}
+	//				else
+	//				{
+	//					numberPart.append(c);
+	//				}
+	//			}
+	//
+	//			if (numberPart != null)
+	//			{
+	//				try
+	//				{
+	//					System.out.println("getNumberFromJEPName: parsing " + numberPart);
+	//
+	//					return Integer.parseInt(numberPart.toString());
+	//				}
+	//				catch (NumberFormatException nfe)
+	//				{
+	//				}
+	//			}
+	//		}
+	//
+	//		throw new RuntimeException("Could not parse number from description:" + name);
+	//	}
 
 	private void associateJEPsToProjects()
 	{
@@ -731,6 +848,12 @@ public class Main
 
 	private boolean linkIsProject(String url)
 	{
+		if (url.contains("http") && !url.contains("openjdk.java.net"))
+		{
+			System.out.println("Ignoring non-JDK project URL " + url);
+			return false;
+		}
+
 		return url.contains("/projects/") && !"/projects/".equals(url) && !url.contains("/projects/jdk");
 	}
 
