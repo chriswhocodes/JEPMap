@@ -84,11 +84,20 @@
         clear: none;
     }
 
-    .menubutton {
+    .menubutton, .sponsor {
         font-size: 14px;
         font-weight: bold;
         padding: 8px;
         background-color: lavender;
+    }
+
+    .sponsor {
+        background-color:lime;
+    }
+
+    .clear {
+        float:none;
+        clear:both;
     }
 </style>
 <div class="topmenu">
@@ -108,7 +117,7 @@
         <button class="menubutton">VMOptionsExplorer</button>
     </a></div>
     <div class="menuitem"><a href="https://github.com/sponsors/chriswhocodes">
-        <button class="menubutton">Thank you!</button>
+        <button class="sponsor">Sponsor this project</button>
     </a></div>
 </div>
 <div class="clear"></div>
@@ -116,7 +125,7 @@
 <div class="intro">
     <div>Built using <a href="https://github.com/chriswhocodes/JEPMap">JEPMap</a> by <a
             href="https://twitter.com/chriswhocodes">@chriswhocodes</a>.
-        Last updated: 2021-09-04
+        Last updated: 2021-09-23
     </div>
 </div>
 <table id="myTable" class="display cell-border">
@@ -445,7 +454,7 @@
 <tr id="392"><td><a href="https://openjdk.java.net/jeps/392">392</a></td><td><a href="https://openjdk.java.net/jeps/392"> Packaging Tool</a></td><td><a href="https://bugs.openjdk.java.net/browse/JDK-8247768">8247768</a></td><td>Closed / Delivered</td><td>2020/06/17</td><td>2021/02/19</td><td>16</td><td>core-libs-dev</td><td><a href="#343">343</a> </td><td></td><td></td></tr>
 <tr id="393"><td><a href="https://openjdk.java.net/jeps/393">393</a></td><td><a href="https://openjdk.java.net/jeps/393"> Foreign-Memory Access API (Third Incubator)</a></td><td><a href="https://bugs.openjdk.java.net/browse/JDK-8253415">8253415</a></td><td>Closed / Delivered</td><td>2020/09/21</td><td>2021/08/28</td><td>16</td><td>panama-dev</td><td><a href="#370">370</a>, <a href="#389">389</a>, <a href="#383">383</a> </td><td></td><td><a href="jepmap.html#panama">panama</a> </td></tr>
 <tr id="394"><td><a href="https://openjdk.java.net/jeps/394">394</a></td><td><a href="https://openjdk.java.net/jeps/394"> Pattern Matching for instanceof</a></td><td><a href="https://bugs.openjdk.java.net/browse/JDK-8250623">8250623</a></td><td>Closed / Delivered</td><td>2020/07/27</td><td>2021/06/01</td><td>16</td><td>amber-dev</td><td><a href="#305">305</a>, <a href="#375">375</a> </td><td></td><td></td></tr>
-<tr id="395"><td><a href="https://openjdk.java.net/jeps/395">395</a></td><td><a href="https://openjdk.java.net/jeps/395"> Records</a></td><td><a href="https://bugs.openjdk.java.net/browse/JDK-8246771">8246771</a></td><td>Closed / Delivered</td><td>2020/06/08</td><td>2021/06/01</td><td>16</td><td>amber-dev</td><td><a href="#384">384</a>, <a href="#359">359</a> </td><td></td><td></td></tr>
+<tr id="395"><td><a href="https://openjdk.java.net/jeps/395">395</a></td><td><a href="https://openjdk.java.net/jeps/395"> Records</a></td><td><a href="https://bugs.openjdk.java.net/browse/JDK-8246771">8246771</a></td><td>Closed / Delivered</td><td>2020/06/08</td><td>2021/09/14</td><td>16</td><td>amber-dev</td><td><a href="#384">384</a>, <a href="#359">359</a> </td><td></td><td></td></tr>
 <tr id="396"><td><a href="https://openjdk.java.net/jeps/396">396</a></td><td><a href="https://openjdk.java.net/jeps/396"> Strongly Encapsulate JDK Internals by Default</a></td><td><a href="https://bugs.openjdk.java.net/browse/JDK-8255363">8255363</a></td><td>Closed / Delivered</td><td>2020/10/23</td><td>2021/08/28</td><td>16</td><td>jigsaw-dev</td><td><a href="#403">403</a> </td><td></td><td><a href="jepmap.html#jigsaw">jigsaw</a> </td></tr>
 <tr id="397"><td><a href="https://openjdk.java.net/jeps/397">397</a></td><td><a href="https://openjdk.java.net/jeps/397"> Sealed Classes (Second Preview)</a></td><td><a href="https://bugs.openjdk.java.net/browse/JDK-8246775">8246775</a></td><td>Closed / Delivered</td><td>2020/06/08</td><td>2021/08/28</td><td>16</td><td>amber-dev</td><td><a href="#360">360</a>, <a href="#409">409</a> </td><td></td><td></td></tr>
 <tr id="398"><td><a href="https://openjdk.java.net/jeps/398">398</a></td><td><a href="https://openjdk.java.net/jeps/398"> Deprecate the Applet API for Removal</a></td><td><a href="https://bugs.openjdk.java.net/browse/JDK-8256145">8256145</a></td><td>Closed / Delivered</td><td>2020/11/10</td><td>2021/08/09</td><td>17</td><td>awt-dev</td><td><a href="#289">289</a> </td><td></td><td></td></tr>
@@ -453,7 +462,7 @@
 <tr id="400"><td><a href="https://openjdk.java.net/jeps/400">400</a></td><td><a href="https://openjdk.java.net/jeps/400"> UTF-8 by Default</a></td><td><a href="https://bugs.openjdk.java.net/browse/JDK-8187041">8187041</a></td><td>Integrated</td><td>2017/08/31</td><td>2021/08/31</td><td>18</td><td>core-libs-dev</td><td></td><td></td><td></td></tr>
 <tr id="401"><td><a href="https://openjdk.java.net/jeps/401">401</a></td><td><a href="https://openjdk.java.net/jeps/401"> Primitive Objects (Preview)</a></td><td><a href="https://bugs.openjdk.java.net/browse/JDK-8251554">8251554</a></td><td>Candidate</td><td>2020/08/13</td><td>2021/08/10</td><td></td><td>valhalla-dev</td><td></td><td></td><td></td></tr>
 <tr id="402"><td><a href="https://openjdk.java.net/jeps/402">402</a></td><td><a href="https://openjdk.java.net/jeps/402"> Unify the Basic Primitives with Objects (Preview)</a></td><td><a href="https://bugs.openjdk.java.net/browse/JDK-8259731">8259731</a></td><td>Candidate</td><td>2021/01/13</td><td>2021/05/13</td><td></td><td>valhalla-dev</td><td></td><td></td><td></td></tr>
-<tr id="403"><td><a href="https://openjdk.java.net/jeps/403">403</a></td><td><a href="https://openjdk.java.net/jeps/403"> Strongly Encapsulate JDK Internals</a></td><td><a href="https://bugs.openjdk.java.net/browse/JDK-8263547">8263547</a></td><td>Completed</td><td>2021/03/13</td><td>2021/08/04</td><td>17</td><td>jigsaw-dev</td><td><a href="#396">396</a> </td><td></td><td><a href="jepmap.html#jigsaw">jigsaw</a> </td></tr>
+<tr id="403"><td><a href="https://openjdk.java.net/jeps/403">403</a></td><td><a href="https://openjdk.java.net/jeps/403"> Strongly Encapsulate JDK Internals</a></td><td><a href="https://bugs.openjdk.java.net/browse/JDK-8263547">8263547</a></td><td>Closed / Delivered</td><td>2021/03/13</td><td>2021/09/08</td><td>17</td><td>jigsaw-dev</td><td><a href="#396">396</a> </td><td></td><td><a href="jepmap.html#jigsaw">jigsaw</a> </td></tr>
 <tr id="404"><td><a href="https://openjdk.java.net/jeps/404">404</a></td><td><a href="https://openjdk.java.net/jeps/404"> Generational Shenandoah</a></td><td><a href="https://bugs.openjdk.java.net/browse/JDK-8260865">8260865</a></td><td>Candidate</td><td>2021/02/01</td><td>2021/08/04</td><td></td><td>hotspot-gc-dev</td><td></td><td></td><td><a href="jepmap.html#shenandoah">shenandoah</a> </td></tr>
 <tr id="405"><td><a href="https://openjdk.java.net/jeps/405">405</a></td><td><a href="https://openjdk.java.net/jeps/405"> Record Patterns & Array Patterns (Preview)</a></td><td><a href="https://bugs.openjdk.java.net/browse/JDK-8260244">8260244</a></td><td>Candidate</td><td>2021/01/21</td><td>2021/06/04</td><td>18</td><td>amber-dev</td><td><a href="#406">406</a> </td><td></td><td></td></tr>
 <tr id="406"><td><a href="https://openjdk.java.net/jeps/406">406</a></td><td><a href="https://openjdk.java.net/jeps/406"> Pattern Matching for switch (Preview)</a></td><td><a href="https://bugs.openjdk.java.net/browse/JDK-8213076">8213076</a></td><td>Closed / Delivered</td><td>2018/10/29</td><td>2021/09/03</td><td>17</td><td>amber-dev</td><td><a href="#405">405</a> </td><td></td><td></td></tr>
@@ -467,8 +476,8 @@
 <tr id="414"><td><a href="https://openjdk.java.net/jeps/414">414</a></td><td><a href="https://openjdk.java.net/jeps/414"> Vector API (Second Incubator)</a></td><td><a href="https://bugs.openjdk.java.net/browse/JDK-8261663">8261663</a></td><td>Closed / Delivered</td><td>2021/02/12</td><td>2021/08/28</td><td>17</td><td>panama-dev</td><td><a href="#338">338</a> </td><td></td><td><a href="jepmap.html#panama">panama</a>, <a href="jepmap.html#valhalla">valhalla</a> </td></tr>
 <tr id="415"><td><a href="https://openjdk.java.net/jeps/415">415</a></td><td><a href="https://openjdk.java.net/jeps/415"> Context-Specific Deserialization Filters</a></td><td><a href="https://bugs.openjdk.java.net/browse/JDK-8263381">8263381</a></td><td>Closed / Delivered</td><td>2021/03/10</td><td>2021/08/02</td><td>17</td><td>core-libs-dev</td><td><a href="#290">290</a> </td><td></td><td></td></tr>
 <tr id="416"><td><a href="https://openjdk.java.net/jeps/416">416</a></td><td><a href="https://openjdk.java.net/jeps/416"> Reimplement Core Reflection with Method Handles</a></td><td><a href="https://bugs.openjdk.java.net/browse/JDK-8266010">8266010</a></td><td>Candidate</td><td>2021/04/26</td><td>2021/08/07</td><td></td><td>core-libs-dev</td><td></td><td></td><td><a href="jepmap.html#loom">loom</a>, <a href="jepmap.html#valhalla">valhalla</a> </td></tr>
-<tr id="417"><td><a href="https://openjdk.java.net/jeps/417">417</a></td><td><a href="https://openjdk.java.net/jeps/417"> Vector API (Third Incubator)</a></td><td><a href="https://bugs.openjdk.java.net/browse/JDK-8269306">8269306</a></td><td>Candidate</td><td>2021/06/24</td><td>2021/08/31</td><td></td><td>panama-dev</td><td></td><td></td><td><a href="jepmap.html#panama">panama</a>, <a href="jepmap.html#valhalla">valhalla</a> </td></tr>
-<tr id="418"><td><a href="https://openjdk.java.net/jeps/418">418</a></td><td><a href="https://openjdk.java.net/jeps/418"> Internet-Address Resolution SPI</a></td><td><a href="https://bugs.openjdk.java.net/browse/JDK-8263693">8263693</a></td><td>Candidate</td><td>2021/03/16</td><td>2021/09/03</td><td></td><td>net-dev</td><td></td><td></td><td></td></tr>
+<tr id="417"><td><a href="https://openjdk.java.net/jeps/417">417</a></td><td><a href="https://openjdk.java.net/jeps/417"> Vector API (Third Incubator)</a></td><td><a href="https://bugs.openjdk.java.net/browse/JDK-8269306">8269306</a></td><td>Targeted</td><td>2021/06/24</td><td>2021/09/17</td><td>18</td><td>panama-dev</td><td></td><td></td><td><a href="jepmap.html#panama">panama</a>, <a href="jepmap.html#valhalla">valhalla</a> </td></tr>
+<tr id="418"><td><a href="https://openjdk.java.net/jeps/418">418</a></td><td><a href="https://openjdk.java.net/jeps/418"> Internet-Address Resolution SPI</a></td><td><a href="https://bugs.openjdk.java.net/browse/JDK-8263693">8263693</a></td><td>Candidate</td><td>2021/03/16</td><td>2021/09/20</td><td></td><td>net-dev</td><td></td><td></td><td></td></tr>
 <tr id="8044082"><td><a href="https://openjdk.java.net/jeps/8044082">8044082</a></td><td><a href="https://openjdk.java.net/jeps/8044082">JEP draft: Efficient array comparison intrinsics</a></td><td><a href="https://bugs.openjdk.java.net/browse/JDK-8044082">8044082</a></td><td>Draft</td><td>2014/05/27</td><td>2016/03/04</td><td></td><td></td><td></td><td></td><td></td></tr>
 <tr id="8044507"><td><a href="https://openjdk.java.net/jeps/8044507">8044507</a></td><td><a href="https://openjdk.java.net/jeps/8044507">JEP draft: JMX Specific Annotations for Registration of Managed Resources</a></td><td><a href="https://bugs.openjdk.java.net/browse/JDK-8044507">8044507</a></td><td>Draft</td><td>2014/06/02</td><td>2019/04/12</td><td>tbd</td><td>jmx-dev</td><td></td><td></td><td></td></tr>
 <tr id="8068562"><td><a href="https://openjdk.java.net/jeps/8068562">8068562</a></td><td><a href="https://openjdk.java.net/jeps/8068562">JEP draft: javadoc tags to distinguish API, implementation, specification, and notes</a></td><td><a href="https://bugs.openjdk.java.net/browse/JDK-8068562">8068562</a></td><td>Draft</td><td>2015/01/06</td><td>2021/03/26</td><td></td><td>jdk9-dev</td><td></td><td></td><td></td></tr>
@@ -507,7 +516,7 @@
 <tr id="8260688"><td><a href="https://openjdk.java.net/jeps/8260688">8260688</a></td><td><a href="https://openjdk.java.net/jeps/8260688">JEP draft: Predictable regex performance</a></td><td><a href="https://bugs.openjdk.java.net/browse/JDK-8260688">8260688</a></td><td>Draft</td><td>2021/01/30</td><td>2021/08/17</td><td></td><td></td><td></td><td></td><td></td></tr>
 <tr id="8261007"><td><a href="https://openjdk.java.net/jeps/8261007">8261007</a></td><td><a href="https://openjdk.java.net/jeps/8261007">JEP draft: Frozen Arrays (Preview)</a></td><td><a href="https://bugs.openjdk.java.net/browse/JDK-8261007">8261007</a></td><td>Draft</td><td>2021/02/03</td><td>2021/02/08</td><td></td><td></td><td></td><td></td><td></td></tr>
 <tr id="8261099"><td><a href="https://openjdk.java.net/jeps/8261099">8261099</a></td><td><a href="https://openjdk.java.net/jeps/8261099">JEP draft: Internal Frozen Arrays</a></td><td><a href="https://bugs.openjdk.java.net/browse/JDK-8261099">8261099</a></td><td>Draft</td><td>2021/02/03</td><td>2021/02/05</td><td></td><td></td><td></td><td></td><td></td></tr>
-<tr id="8261529"><td><a href="https://openjdk.java.net/jeps/8261529">8261529</a></td><td><a href="https://openjdk.java.net/jeps/8261529">JEP draft: Universal Generics (Preview)</a></td><td><a href="https://bugs.openjdk.java.net/browse/JDK-8261529">8261529</a></td><td>Draft</td><td>2021/02/10</td><td>2021/08/11</td><td></td><td></td><td></td><td></td><td></td></tr>
+<tr id="8261529"><td><a href="https://openjdk.java.net/jeps/8261529">8261529</a></td><td><a href="https://openjdk.java.net/jeps/8261529">JEP draft: Universal Generics (Preview)</a></td><td><a href="https://bugs.openjdk.java.net/browse/JDK-8261529">8261529</a></td><td>Draft</td><td>2021/02/10</td><td>2021/09/20</td><td></td><td></td><td></td><td></td><td></td></tr>
 <tr id="8263012"><td><a href="https://openjdk.java.net/jeps/8263012">8263012</a></td><td><a href="https://openjdk.java.net/jeps/8263012">JEP draft: Scope Locals</a></td><td><a href="https://bugs.openjdk.java.net/browse/JDK-8263012">8263012</a></td><td>Draft</td><td>2021/03/04</td><td>2021/05/12</td><td></td><td></td><td></td><td></td><td></td></tr>
 <tr id="8264130"><td><a href="https://openjdk.java.net/jeps/8264130">8264130</a></td><td><a href="https://openjdk.java.net/jeps/8264130">JEP draft: PAC-RET protection for Linux/AArch64</a></td><td><a href="https://bugs.openjdk.java.net/browse/JDK-8264130">8264130</a></td><td>Draft</td><td>2021/03/24</td><td>2021/03/29</td><td></td><td></td><td></td><td></td><td></td></tr>
 <tr id="8264131"><td><a href="https://openjdk.java.net/jeps/8264131">8264131</a></td><td><a href="https://openjdk.java.net/jeps/8264131">JEP draft: Arm64e support for MacOS/AArch64</a></td><td><a href="https://bugs.openjdk.java.net/browse/JDK-8264131">8264131</a></td><td>Draft</td><td>2021/03/24</td><td>2021/03/29</td><td></td><td></td><td></td><td></td><td></td></tr>
