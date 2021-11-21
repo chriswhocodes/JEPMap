@@ -5,6 +5,9 @@
 
 package com.chrisnewland.jepmap;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.*;
 
 public class JEP
@@ -17,6 +20,7 @@ public class JEP
 	private String release;
 	private String discussion;
 	private String issue;
+	private String body;
 
 	private final Set<Integer> related = new HashSet<>();
 	private final Set<Integer> depends = new HashSet<>();
@@ -138,6 +142,16 @@ public class JEP
 		return projectIds;
 	}
 
+	public String getBody()
+	{
+		return body;
+	}
+
+	public void setBody(String body)
+	{
+		this.body = body;
+	}
+
 	@Override public String toString()
 	{
 		return number + " => " + name + " (status: " + status + ")";
@@ -194,7 +208,7 @@ public class JEP
 
 	private String makeJEPLink(int number, Object text)
 	{
-		return makeLink(Main.URL_JEPS + number, text.toString());
+		return makeLink(JEPProcessor.URL_JEPS + number, text.toString());
 	}
 
 	private String getSafeEmail(String listName)
@@ -231,5 +245,75 @@ public class JEP
 		}
 
 		return builder.toString();
+	}
+
+	public String serialise()
+	{
+		JSONObject jsonObject = new JSONObject();
+
+		jsonObject.put("name", name);
+		jsonObject.put("number", number);
+		jsonObject.put("status", status);
+		jsonObject.put("created", created);
+		jsonObject.put("updated", updated);
+		jsonObject.put("release", release);
+		jsonObject.put("discussion", discussion);
+		jsonObject.put("issue", issue);
+		jsonObject.put("body", body);
+
+		jsonObject.put("related", related);
+		jsonObject.put("depends", depends);
+		jsonObject.put("projectIds", projectIds);
+
+		return jsonObject.toString();
+	}
+
+	public static JEP deserialise(JSONObject jsonObject)
+	{
+		int number = jsonObject.getInt("number");
+
+		String name = jsonObject.getString("name");
+
+		JEP jep = new JEP(name, number);
+
+		jep.setStatus(jsonObject.optString("status", null));
+		jep.setCreated(jsonObject.optString("created", null));
+		jep.setUpdated(jsonObject.optString("updated", null));
+		jep.setRelease(jsonObject.optString("release", null));
+		jep.setDiscussion(jsonObject.optString("discussion", null));
+		jep.setIssue(jsonObject.optString("issue", null));
+		jep.setBody(jsonObject.optString("body", null));
+
+		JSONArray related = jsonObject.optJSONArray("related");
+
+		if (related != null)
+		{
+			for (int i = 0; i < related.length(); i++)
+			{
+				jep.addRelated(related.getInt(i));
+			}
+		}
+
+		JSONArray depends = jsonObject.optJSONArray("depends");
+
+		if (depends != null)
+		{
+			for (int i = 0; i < depends.length(); i++)
+			{
+				jep.addDepends(depends.getInt(i));
+			}
+		}
+
+		JSONArray projectIds = jsonObject.optJSONArray("projectIds");
+
+		if (related != null)
+		{
+			for (int i = 0; i < projectIds.length(); i++)
+			{
+				jep.addProjectId(projectIds.getString(i));
+			}
+		}
+
+		return jep;
 	}
 }

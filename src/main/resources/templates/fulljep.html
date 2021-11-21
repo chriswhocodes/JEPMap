@@ -1,0 +1,139 @@
+<html>
+<head>
+    <style>
+        body {
+            font-family: sans-serif;
+        }
+
+        .highlight {
+            background-color: yellow;
+        }
+
+        .link {
+            font-weight: bold;
+        }
+
+        .snippet {
+        }
+
+        .search {
+            margin-top: 8px;
+            font-size: larger;
+        }
+
+        #input {
+            font-size: larger;
+        }
+
+        #results {
+            margin-top: 16px;
+        }
+
+        .serverStats {
+            border-collapse: collapse;
+            width: 320px;
+        }
+
+        .serverStats th, .serverStats td {
+            border: 1px solid black;
+            padding: 4px;
+            width: 50%;
+            text-align: center;
+            font-size: smaller;
+        }
+
+        .search {
+            font-weight: bold;
+        }
+
+    </style>
+    <script>
+        const endpoint = 'wss://chriswhocodes.com:8443/fulltext';
+
+        let socket = new WebSocket(endpoint);
+
+        let startTime = Date.now();
+
+        init();
+
+        function init() {
+            socket.onerror = function (event) {
+                console.error("WebSocket error observed:", event);
+            };
+
+            socket.onopen = function (event) {
+                document.getElementById("websocket").innerText = "Connected";
+                document.getElementById("websocket").style.backgroundColor = "green";
+            };
+
+            socket.onclose = function (event) {
+                document.getElementById("websocket").innerText = "Reconnecting";
+                document.getElementById("websocket").style.backgroundColor = "yellow";
+
+                setTimeout(() => {
+                    socket = new WebSocket(endpoint);
+                    init();
+                }, 5000);
+            };
+
+            socket.onmessage = function (event) {
+                let elapsed = Date.now() - startTime;
+
+                document.getElementById("response").innerHTML = elapsed;
+
+                let search = document.getElementById("input").value;
+
+                let json = JSON.parse(event.data);
+
+                let html = '';
+
+                let regexp = new RegExp(search, 'gi');
+
+                for (var row in json) {
+                    let number = json[row].number;
+                    let linkText = 'JEP' + number + ' ' + json[row].name;
+
+                    html += '<div class="link"><a href="https://openjdk.java.net/jeps/' + number + '">' + linkText.replace(regexp, '<span class="highlight">$&</span>') + '</a></div>';
+                    html += '<div class="snippet">' + json[row].snippet.replace(regexp, '<span class="highlight">$&</span>') + '</div>';
+                    html += '<br>';
+                }
+
+                document.getElementById("results").innerHTML = html;
+            }
+        }
+
+        function handleKey() {
+            let input = document.getElementById("input");
+
+            if (input.value.length >= 3) {
+                socket.send(input.value);
+                startTime = Date.now();
+            } else {
+                document.getElementById("results").innerHTML = '';
+                document.getElementById("response").innerHTML = '';
+            }
+        }
+    </script>
+</head>
+<body>
+%TOPMENU%
+<h1>FullJEP Search</h1>
+<h2>(JDK Enhancement Proposal Full-Text Search)</h2>
+<table class="serverStats">
+    <tr>
+        <th>Websocket</th>
+        <th>Response time (ms)</th>
+    </tr>
+    <tr>
+        <td id="websocket"></td>
+        <td id="response"></td>
+    </tr>
+</table>
+<hr>
+<div class="wrap">
+    <div class="search">Search JEPs: <input type="search" id="input" size="32" oninput="handleKey()"></div>
+</div>
+<hr>
+<div id="results"></div>
+</body>
+</html>

@@ -9,40 +9,93 @@
         clear: none;
     }
 
-    .menubutton, .sponsor {
+    .menubutton_jep, .menubutton_explore, .menubutton_jit, .menubutton_book {
         font-size: 14px;
         font-weight: bold;
         padding: 8px;
-        background-color: lavender;
     }
 
-    .sponsor {
-        background-color:lime;
+    .menubutton_jep {
+        background-color: lightsteelblue;
+    }
+
+    .menubutton_explore {
+        background-color: mediumspringgreen;
+    }
+
+    .menubutton_jit {
+        background-color: darkorange;
+    }
+
+    .menubutton_book {
+        background-color: gold;
     }
 
     .clear {
-        float:none;
-        clear:both;
+        float: none;
+        clear: both;
+    }
+
+    .topintro {
+        font-size: 16px;
+        padding: 4px 2px;
+        margin-bottom: 8px;
+        text-align: center;
+        border: solid 1px black;
+        background-color: #22ff22;
     }
 </style>
+<div class="topintro">I make tools for understanding the Java Virtual Machine. Please support my work by <a
+        href="https://github.com/sponsors/chriswhocodes">sponsoring me on GitHub.</a> Thank you!
+</div>
 <div class="topmenu">
-    <div class="menuitem"><a href="https://jacoline.dev/inspect">
-        <button class="menubutton">JaCoLine</button>
+    <div class="menuitem"><a href="https://chriswhocodes.com/fulljep.html">
+        <button class="menubutton_jep" title="Full-Text search for JEPs">FullJEP</button>
     </a></div>
-    <div class="menuitem"><a href="/jepmap.html">
-        <button class="menubutton">JEPMap</button>
+    <div class="menuitem"><a href="https://chriswhocodes.com/jepmap.html">
+        <button class="menubutton_jep" title="A parser for discovering the relationships between OpenJDK Projects and their JEPs.">
+            JEPMap
+        </button>
     </a></div>
-    <div class="menuitem"><a href="/jepsearch.html">
-        <button class="menubutton">JEPSearch</button>
+    <div class="menuitem"><a href="https://chriswhocodes.com/jepsearch.html">
+        <button class="menubutton_jep" title="Sort, search and filter JEPs">JEPSearch</button>
     </a></div>
     <div class="menuitem"><a href="https://github.com/AdoptOpenJDK/jitwatch">
-        <button class="menubutton">JITWatch</button>
+        <button class="menubutton_jit"
+                title="Log analyser / visualiser for Java HotSpot JIT compiler. Inspect inlining decisions, hot methods, bytecode, and assembly.">
+            JITWatch
+        </button>
     </a></div>
-    <div class="menuitem"><a href="/vm-options-explorer.html">
-        <button class="menubutton">VMOptionsExplorer</button>
+    <div class="menuitem"><a href="https://jacoline.dev/inspect">
+        <button class="menubutton_explore" title="An interactive Java command line inspector.">JaCoLine</button>
     </a></div>
-    <div class="menuitem"><a href="https://github.com/sponsors/chriswhocodes">
-        <button class="sponsor">Sponsor this Project</button>
+    <div class="menuitem"><a href="https://chriswhocodes.com/vm-options-explorer.html">
+        <button class="menubutton_explore" title="The complete list of JVM command line options for each JDK.">VM Options Explorer
+        </button>
+    </a></div>
+    <div class="menuitem"><a href="https://chriswhocodes.com/vm-intrinsics-explorer.html">
+        <button class="menubutton_explore" title="Inspect VM intrinsics for each JDK">VM Intrinsics Explorer</button>
+    </a></div>
+    <div class="menuitem"><a href="https://chriswhocodes.com/gc-explorer.html">
+        <button class="menubutton_explore" title="Explorer GC options for each JDK">GC Explorer</button>
+    </a></div>
+    <div class="menuitem"><a href="https://optimizingjava.com">
+        <button class="menubutton_book" title="Learn how the JVM really works and how to optimise your code and runtime settings">
+            Optimizing Java
+        </button>
     </a></div>
 </div>
 <div class="clear"></div>
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-M5QV0NV1LK"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+        dataLayer.push(arguments);
+    }
+
+    gtag('js', new Date());
+
+    gtag('config', 'G-M5QV0NV1LK');
+</script>
