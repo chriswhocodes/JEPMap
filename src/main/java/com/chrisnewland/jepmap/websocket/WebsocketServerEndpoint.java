@@ -34,7 +34,7 @@ import javax.websocket.server.ServerEndpoint;
 			List<JEP> jeps = FullJEPServer.getJEPLoader().searchJEPs(search.trim());
 			long stop = System.currentTimeMillis();
 
-			System.out.println(search + " in " + (stop - start) + "ms");
+			System.out.println(search + " in " + (stop - start) + "ms found " + jeps.size() + " results");
 
 			JSONArray result = new JSONArray();
 
@@ -45,43 +45,50 @@ import javax.websocket.server.ServerEndpoint;
 				forlabel:
 				for (JEP jep : jeps)
 				{
-					String body = jep.getBody();
-
-					String bodyLower = body.toLowerCase();
-
-					StringBuilder builder = new StringBuilder();
-
-					int pos = bodyLower.indexOf(search);
-
-					builder.append("<ul>");
-
-					do
+					try
 					{
-						String snippet = body.substring(Math.max(0, pos - context), Math.min(pos + context, body.length()));
+						String body = jep.getBody();
 
-						int firstSpace = snippet.indexOf(' ');
-						int lastSpace = snippet.lastIndexOf(' ');
+						String bodyLower = body.toLowerCase();
 
-						if (firstSpace == -1 | lastSpace == -1)
+						StringBuilder builder = new StringBuilder();
+
+						int pos = bodyLower.indexOf(search);
+
+						builder.append("<ul>");
+
+						do
 						{
-							continue forlabel;
-						}
+							String snippet = body.substring(Math.max(0, pos - context), Math.min(pos + context, body.length()));
 
-						builder.append("<li>...").append(snippet.substring(firstSpace + 1, lastSpace)).append("...</li>");
+							int firstSpace = snippet.indexOf(' ');
+							int lastSpace = snippet.lastIndexOf(' ');
 
-						pos = bodyLower.indexOf(search, pos + context);
+							if (firstSpace == -1 || lastSpace == -1 || firstSpace == lastSpace)
+							{
+								continue forlabel;
+							}
 
-					} while (pos != -1);
+							builder.append("<li>...").append(snippet.substring(firstSpace + 1, lastSpace)).append("...</li>");
 
-					builder.append("</ul>");
+							pos = bodyLower.indexOf(search, pos + context);
 
-					JSONObject jsonObject = new JSONObject();
+						} while (pos != -1);
 
-					jsonObject.put("number", jep.getNumber());
-					jsonObject.put("name", jep.getName());
-					jsonObject.put("snippet", builder);
+						builder.append("</ul>");
 
-					result.put(jsonObject);
+						JSONObject jsonObject = new JSONObject();
+
+						jsonObject.put("number", jep.getNumber());
+						jsonObject.put("name", jep.getName());
+						jsonObject.put("snippet", builder);
+
+						result.put(jsonObject);
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
 				}
 			}
 
