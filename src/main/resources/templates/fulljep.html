@@ -46,6 +46,13 @@
             font-weight: bold;
         }
 
+        .jepresult {
+            border: 1px solid black;
+            padding: 4px;
+            background-color: #eeeeff;
+            margin-bottom: 8px;
+        }
+
     </style>
     <script>
         const endpoint = 'wss://chriswhocodes.com:8443/fulltext';
@@ -58,22 +65,18 @@
 
         function init() {
             socket.onerror = function (event) {
-                console.error("WebSocket error observed:", event);
+                console.error("WebSocket error:", event);
+                reconnect();
             };
 
             socket.onopen = function (event) {
                 document.getElementById("websocket").innerText = "Connected";
-                document.getElementById("websocket").style.backgroundColor = "green";
+                document.getElementById("websocket").style.backgroundColor = "#00ff00";
             };
 
             socket.onclose = function (event) {
-                document.getElementById("websocket").innerText = "Reconnecting";
-                document.getElementById("websocket").style.backgroundColor = "yellow";
-
-                setTimeout(() => {
-                    socket = new WebSocket(endpoint);
-                    init();
-                }, 5000);
+                console.error("WebSocket closed:", event);
+                reconnect();
             };
 
             socket.onmessage = function (event) {
@@ -93,14 +96,27 @@
                     let number = json[row].number;
                     let linkText = 'JEP' + number + ' ' + json[row].name;
 
+                    html += '<div class="jepresult">';
                     html += '<div class="link"><a href="https://openjdk.java.net/jeps/' + number + '">' + linkText.replace(regexp, '<span class="highlight">$&</span>') + '</a></div>';
                     html += '<div class="snippet">' + json[row].snippet.replace(regexp, '<span class="highlight">$&</span>') + '</div>';
                     html += '<br>';
+                    html += '</div>';
                 }
 
                 document.getElementById("results").innerHTML = html;
             }
         }
+
+        function reconnect() {
+            document.getElementById("websocket").innerText = "Reconnecting";
+            document.getElementById("websocket").style.backgroundColor = "yellow";
+
+            setTimeout(() => {
+                socket = new WebSocket(endpoint);
+                init();
+            }, 5000);
+        }
+
 
         function handleKey() {
             let input = document.getElementById("input");
