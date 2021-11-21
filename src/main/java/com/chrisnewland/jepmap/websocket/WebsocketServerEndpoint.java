@@ -18,7 +18,7 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
-@ServerEndpoint(value = "/fulltext/") public class WebsocketServerEndpoint
+@ServerEndpoint(value = "/fulltext") public class WebsocketServerEndpoint
 {
 	@OnOpen public void onWebSocketConnect(Session session)
 	{
