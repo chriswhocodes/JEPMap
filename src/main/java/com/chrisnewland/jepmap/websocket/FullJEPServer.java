@@ -44,7 +44,8 @@ public class FullJEPServer
 
 		JavaxWebSocketServletContainerInitializer.configure(context, (servletContext, wsContainer) -> {
 			wsContainer.setDefaultMaxTextMessageBufferSize(256);
-
+			wsContainer.setDefaultMaxBinaryMessageBufferSize(256);
+			wsContainer.setDefaultMaxSessionIdleTimeout(120_000);
 			wsContainer.addEndpoint(WebsocketServerEndpoint.class);
 		});
 
