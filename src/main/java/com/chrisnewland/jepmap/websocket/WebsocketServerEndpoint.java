@@ -98,11 +98,14 @@ import javax.websocket.server.ServerEndpoint;
 
 	@OnClose public void onWebSocketClose(CloseReason reason)
 	{
-		System.out.println("Socket Closed: " + reason);
+		//System.out.println("Socket Closed: " + reason);
 	}
 
 	@OnError public void onWebSocketError(Throwable cause)
 	{
-		System.out.println(cause.getMessage());
+		if (cause.getMessage() != null)
+		{
+			System.out.println("onWebSocketError: " + cause.getMessage());
+		}
 	}
 }
