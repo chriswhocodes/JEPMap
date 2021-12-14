@@ -501,8 +501,10 @@ public class JEPProcessor
 				throw e;
 			}
 
+			String htmlToSave = document.outerHtml().replace("&#x2009;", " ").replace("&thinsp;", " ");
+
 			//System.out.println("Saving to file: " + file.getAbsolutePath());
-			Files.write(file.toPath(), document.outerHtml().getBytes(StandardCharsets.UTF_8));
+			Files.write(file.toPath(), htmlToSave.getBytes(StandardCharsets.UTF_8));
 		}
 
 		return document;
@@ -668,8 +670,6 @@ public class JEPProcessor
 
 				Element valueElementTd = tdElements.get(1);
 				String valueText = valueElementTd.text();
-
-				valueText = valueText.replace("&#x2009;", "").replace("&thinsp;", "");
 
 				System.out.println(key + "=>" + valueText);
 
