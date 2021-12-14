@@ -669,6 +669,8 @@ public class JEPProcessor
 				Element valueElementTd = tdElements.get(1);
 				String valueText = valueElementTd.text();
 
+				valueText = valueText.replace("&#x2009;", "").replace("&thinsp;", "");
+
 				System.out.println(key + "=>" + valueText);
 
 				if ("Relates to".equals(key))
