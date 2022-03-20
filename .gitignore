@@ -24,3 +24,6 @@ hs_err_pid*
 
 # generated HTML output
 output/*.html
+
+# IntelliJ files
+.idea
