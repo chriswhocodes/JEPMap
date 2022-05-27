@@ -5,6 +5,8 @@
 
 package com.chrisnewland.jepmap;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.jsoup.*;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -13,6 +15,11 @@ import org.jsoup.select.Elements;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,6 +28,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class JEPProcessor
 {
@@ -40,6 +48,28 @@ public class JEPProcessor
 
 	private static final String URL_WIKI = "https://wiki.openjdk.java.net/display/";
 
+	private static final String URL_ISSUE_TRACKER = "bugs.openjdk.java.net";
+
+	private static final String SEARCH_API_PATH = "/rest/api/latest/search";
+
+    // by default the API response contains a lot of fields, we don't need
+    // many of them so restricting to the subset of fields we want.
+    private static final List<String> JIRA_FIELDS = List.of(
+            "customfield_10701",  // JEP Number
+            "status",
+            "created",
+            "updated",
+            "key", // OpenJDK bug ID
+            "summary", // JEP Title
+            "description", // JEP body
+            "fixVersions", // JDK release to which JEP is/was targeted
+            "customfield_10901", // discussion list for the JEP
+            "issuelinks" // for relates to and depends
+    );
+
+    // filter issues to include only JEPs. possible to add sorting too if need be
+    private static final String JEP_SEARCH_JQL = "project = JDK AND issuetype = JEP";
+
 	private final Path htmlCachePath = Paths.get("/tmp/jepmap");
 
 	private final JEPMap jepMap = new JEPMap();
@@ -52,8 +82,7 @@ public class JEPProcessor
 
 	private final Path pathOutputHtml;
 
-	public static void main(String[] args) throws IOException
-	{
+	public static void main(String[] args) throws IOException, URISyntaxException, InterruptedException {
 		if (args.length != 2)
 		{
 			System.err.println("JEPProcessor <jsonOutputDir> <htmlOutputDir>");
@@ -565,212 +594,184 @@ public class JEPProcessor
 		return Integer.parseInt(last);
 	}
 
-	private String getProjectIdFromLink(String link)
-	{
-		System.out.println("getProjectIdFromLink: " + link);
+	private static String buildQueryParams(Map<String, String> params) {
+        return params
+                // Let's be a bit fancy! :)
+                .entrySet()
+                .stream()
+                .map(entry -> entry.getKey() + "=" + entry.getValue())
+                .collect(Collectors.joining("&"));
+    }
 
-		link = link.replace("%5D", "");
+	private void parseJEPs() throws IOException, URISyntaxException, InterruptedException {
+		int startAt = 0;
 
-		String[] parts = link.split("/");
+        var client = HttpClient.newHttpClient();
+        var baseParams = new HashMap<String, String>();
+        // this will include a top level names field which shows the human friendly mapping name of custom fields
+        baseParams.put("expand", "names");
+        baseParams.put("fields", String.join(",", JIRA_FIELDS));
+        baseParams.put("jql", JEP_SEARCH_JQL);
 
-		boolean lastPartWasProjects = false;
+        while (true) {
+            baseParams.put("startAt", String.valueOf(startAt));
 
-		String projectId = null;
+            var query = buildQueryParams(baseParams);
+            var uri = new URI("https", URL_ISSUE_TRACKER, SEARCH_API_PATH, query, null);
+            System.out.println("Querying JEPs at offset: " + startAt);
 
-		for (String part : parts)
-		{
-			if ("projects".equals(part))
-			{
-				lastPartWasProjects = true;
-				continue;
-			}
+            var request = HttpRequest.newBuilder().GET().uri(uri).build();
+            var response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-			if (lastPartWasProjects)
-			{
-				projectId = part;
-				break;
-			}
-		}
+            if (response.statusCode() != 200) {
+                System.err.println(response);
+                System.err.println("Headers: " + response.headers());
+                System.err.println("Body: " + response.body());
+                throw new RuntimeException("Http Request to query JEPs failed");
+            }
 
-		if (projectId != null && projectId.indexOf('#') != -1)
-		{
-			projectId = projectId.substring(0, projectId.indexOf('#'));
-		}
+            var root = new JSONObject(response.body());
+            parseResponse(root);
 
-		System.out.println("getProjectIdFromLink got: " + projectId);
+            // check whether we have processed all JEPs
+            int total = root.getInt("total");
+            int previousStartAt = root.getInt("startAt");
+            int maxResults = root.getInt("maxResults");
+            boolean stop = previousStartAt + maxResults >= total;
 
-		return projectId;
+            if (stop) {
+                break;
+            }
+
+            startAt = previousStartAt + maxResults;
+        }
+
+        postProcessLinks();
+		for (var entry: jepMap.entrySet()) {
+            Files.write(
+                    pathOutputJson.resolve(entry.getKey() + ".json"),
+                    entry.getValue().serialise().getBytes(StandardCharsets.UTF_8)
+            );
+        }
+
 	}
 
-	private void parseJEPs() throws IOException
-	{
-		Document documentJEPs = loadHTML(URL_JEPS);
+	private void parseResponse(JSONObject root) {
+        JSONArray issues = root.getJSONArray("issues");
+        for (int index = 0; index < issues.length(); index++) {
+            JSONObject issue = issues.getJSONObject(index);
+            var jep = parseJEP(issue);
+            jepMap.put(jep.getNumber(), jep);
+        }
+    }
 
-		Elements jepTables = documentJEPs.select("table[class=jeps]");
+    private JEP parseJEP(JSONObject issue) {
+        JSONObject fields = issue.getJSONObject("fields");
 
-		for (Element jepTable : jepTables)
-		{
-			Elements hrefElements = jepTable.select("a[href]");
+        // key is the OpenJDK Bug ID, its starts with JDK- prefix which is redundant for our use so remove it.
+        String key = issue.getString("key").substring(4);
+        // if the JEP has a number, then get it otherwise use the key (openjdk bug id)
+        // after removing JDK- from the start
+        String jepNumber = fields.optString("customfield_10701", key);
+        int number = Integer.parseInt(jepNumber);
 
-			for (Element hrefElement : hrefElements)
-			{
-				String link = hrefElement.attr("href");
+        // FIXME: 8229187 is a test JEP, blacklist?
+        JEP jep = new JEP(fields.getString("summary"), number);
+        jep.setCreated(fields.getString("created"));
+        jep.setUpdated(fields.getString("updated"));
+        jep.setStatus(fields.getJSONObject("status").getString("name"));
+        jep.setIssue(key);
 
-				System.out.println("JEP link: " + link);
+        jep.setBody(fields.optString("description", null));
+        jep.setDiscussion(fields.optString("customfield_10901", null));
 
-				try
-				{
-					int jepNumber = Integer.parseInt(link);
+        // there may be multiple fixVersions for an issue, but I assume that for a JEP
+        // only one is logical so just use the first release version if available
+        JSONArray fixVersions = fields.getJSONArray("fixVersions");
+        JSONObject version = fixVersions.optJSONObject(0);
+        if (version != null) {
+            jep.setRelease(version.getString("name"));
+        }
 
-					System.out.println("looking for " + link);
+        addIssueLinks(jep, fields.getJSONArray("issuelinks"));
 
-					JEP jep = parseJEP(jepNumber);
+		System.out.println("Parsed JEP " + jep.getNumber());
+        return jep;
+    }
 
-					jepMap.put(jepNumber, jep);
-				}
-				catch (Exception e)
-				{
-					System.out.println("Couldn't load JEP " + link);
+    private void addIssueLinks(JEP jep, JSONArray issueLinks) {
+        for (int index = 0; index < issueLinks.length(); index++) {
+            JSONObject issueDetails = issueLinks.getJSONObject(index);
 
-					e.printStackTrace();
-					System.exit(-1);
-				}
-			}
-		}
-	}
+            // for relates, the direction doesn't matter but we need it for blocks/is blocked by
+            String direction;
 
-	private JEP parseJEP(int number) throws IOException
-	{
-		String url = URL_JEPS + number;
+            // the other issue either has the key outwardIssue or inwardIssue
+            JSONObject issue = issueDetails.optJSONObject("outwardIssue");
+            if (issue != null) {
+                direction = "outward";
+            } else {
+                issue = issueDetails.optJSONObject("inwardIssue");
+                if (issue == null) {
+                    // AFAIK there are no other possible keys so this should be unreachable
+                    // but if we do reach here. log an error and continue
+                    System.err.println("Neither inwardIssue nor outwardIssue key found. JSON: " + issueDetails);
+                    continue;
+                }
+                direction = "inward";
+            }
 
-		Document doc = loadHTML(url);
+            // we only want JEPs for related/depends on, so this should exclude subtasks etc.
+            String issueType = issue.getJSONObject("fields").getJSONObject("issuetype").getString("name");
+            if (!issueType.equalsIgnoreCase("JEP")) {
+                continue;
+            }
 
-		Element h1 = doc.select("h1").first();
+            // key of the other JEP, remove JDK- prefix
+            String otherKey = issue.getString("key").substring(4);
+            int number = Integer.parseInt(otherKey);
 
-		String title = h1.text();
+            String relation = issueDetails.getJSONObject("type").getString("name");
 
-		JEP jep = new JEP(title, number);
+            // we want to relate JEPs using their number but here we only have openjdk issue id so
+            // we add it here. in a post processing step, the issue ids are mapped to jep numbers
 
-		System.out.println("================================ " + jep);
+            // blocks and inward is blocked by relation which we handle here. we can also check
+            // blocks and outward for blocks an issue. currently, we do not treat it separately and
+            // just add it as related to
+            if (relation.equalsIgnoreCase("Blocks") && direction.equals("inward")) {
+                jep.addDepends(number);
+            } else {
+                jep.addRelated(number);
+            }
+        }
+    }
 
-		Element headTable = doc.select("table.head").first();
+    private void postProcessLinks() {
+        Map<Integer, Integer> issueToJepMapping = new HashMap<>();
 
-		Elements trElements = headTable.getElementsByTag("tr");
+        for (var jep: jepMap.values()) {
+            Integer issue = Integer.valueOf(jep.getIssue());
+            issueToJepMapping.put(issue, jep.getNumber());
+        }
 
-		boolean inRelated = false;
-		boolean inDepends = false;
+        for (var jep: jepMap.values()) {
+            updateLinksSet(issueToJepMapping, jep.getRelated());
+            updateLinksSet(issueToJepMapping, jep.getDepends());
+        }
+    }
 
-		for (Element tr : trElements)
-		{
-			Elements tdElements = tr.getElementsByTag("td");
-
-			if (tdElements.size() == 2)
-			{
-				String key = tdElements.get(0).text();
-
-				Element valueElementTd = tdElements.get(1);
-				String valueText = valueElementTd.text();
-
-				System.out.println(key + "=>" + valueText);
-
-				if ("Relates to".equals(key))
-				{
-					inRelated = true;
-				}
-				else if (!key.trim().isEmpty())
-				{
-					inRelated = false;
-				}
-
-				if ("Depends".equals(key))
-				{
-					inDepends = true;
-				}
-				else if (!key.trim().isEmpty())
-				{
-					inDepends = false;
-				}
-
-				if (inRelated)
-				{
-					String hrefJEP = valueElementTd.child(0).attr("href");
-
-					try
-					{
-						int related = Integer.parseInt(hrefJEP);
-
-						jep.addRelated(related);
-					}
-					catch (NumberFormatException nfe)
-					{
-					}
-				}
-				else if (inDepends)
-				{
-					String hrefJEP = valueElementTd.child(0).attr("href");
-
-					try
-					{
-						int depends = Integer.parseInt(hrefJEP);
-
-						jep.addDepends(depends);
-					}
-					catch (NumberFormatException nfe)
-					{
-					}
-				}
-
-				if ("Discussion".equals(key))
-				{
-					jep.setDiscussion(valueText);
-				}
-				else if ("Status".equals(key))
-				{
-					jep.setStatus(valueText);
-				}
-				else if ("Created".equals(key))
-				{
-					jep.setCreated(valueText);
-				}
-				else if ("Updated".equals(key))
-				{
-					jep.setUpdated(valueText);
-				}
-				else if ("Release".equals(key))
-				{
-					jep.setRelease(valueText);
-				}
-				else if ("Issue".equals(key))
-				{
-					jep.setIssue(valueText);
-				}
-			}
-		}
-
-		Element markdown = doc.select("div[class=markdown]").first();
-
-		jep.setBody(markdown.text());
-
-		Elements hrefElements = markdown.select("a[href]");
-
-		for (Element hrefElement : hrefElements)
-		{
-			String link = hrefElement.attr("href");
-
-			if (linkIsProject(link))
-			{
-				String projectId = getProjectIdFromLink(link);
-
-				System.out.println("Found project link in JEP:" + projectId);
-
-				jep.addProjectId(projectId);
-			}
-		}
-
-		Files.write(pathOutputJson.resolve(jep.getNumber() + ".json"), jep.serialise().getBytes(StandardCharsets.UTF_8));
-
-		return jep;
-	}
+    private void updateLinksSet(Map<Integer, Integer> issueToJepMapping, Set<Integer> issues) {
+        // during initial processing, we are only able to build issue links using issue ids i.e. but we want to link using
+        // jep number instead so replace each key with corresponding number.
+        var replacement = issues
+                .stream()
+                .map(issueToJepMapping::get)
+                .collect(Collectors.toSet());
+        // clear issue ids and add jep numbers
+        issues.clear();
+        issues.addAll(replacement);
+    }
 
 	private void associateJEPsToProjects()
 	{
@@ -786,7 +787,13 @@ public class JEPProcessor
 
 				discussion = discussion.replace("-dev", "");
 
-				String projectId = discussion.substring(0, discussion.indexOf('@'));
+				String projectId;
+				if (discussion.contains("@")) {
+					projectId = discussion.substring(0, discussion.indexOf('@'));
+				} else {
+					// JEP 8130200 has discussion set as only hotspot-gc-dev, no @ in it
+					projectId = discussion;
+				}
 
 				System.out.println(jep + " discussed on " + projectId);
 

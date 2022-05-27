@@ -218,8 +218,13 @@ public class JEP
 		if (atPos != -1)
 		{
 			listName = listName.substring(0, atPos).replace("dash", "-").replace(" ", "");
+			return listName;
 		}
 
+		atPos = listName.indexOf("@");
+		if (atPos != -1) {
+			listName = listName.substring(0, atPos);
+		}
 		return listName;
 	}
 
