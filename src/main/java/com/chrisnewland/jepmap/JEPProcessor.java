@@ -786,17 +786,22 @@ public class JEPProcessor
 
 				discussion = discussion.replace("-dev", "");
 
-				String projectId = discussion.substring(0, discussion.indexOf('@'));
+				int atPos = discussion.indexOf('@');
 
-				System.out.println(jep + " discussed on " + projectId);
-
-				if (projectMap.containsKey(projectId))
+				if (atPos != -1)
 				{
-					Project project = projectMap.get(projectId);
+					String projectId = discussion.substring(0, atPos);
 
-					if (project != null)
+					System.out.println(jep + " discussed on " + projectId);
+
+					if (projectMap.containsKey(projectId))
 					{
-						project.addJEP(jep);
+						Project project = projectMap.get(projectId);
+
+						if (project != null)
+						{
+							project.addJEP(jep);
+						}
 					}
 				}
 			}
