@@ -6,7 +6,7 @@ package com.chrisnewland.jepmap.websocket;
 
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.websocket.javax.server.config.JavaxWebSocketServletContainerInitializer;
+import org.eclipse.jetty.websocket.jakarta.server.config.JakartaWebSocketServletContainerInitializer;
 
 import java.net.InetSocketAddress;
 import java.nio.file.Path;
@@ -32,8 +32,6 @@ public class FullJEPServer
 	{
 		jepLoader = new JEPLoader(jepDir);
 
-		// https://www.eclipse.org/jetty/documentation/jetty-10/programming_guide.php
-
 		Server server = new Server(new InetSocketAddress("127.0.0.1", 8080));
 
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
@@ -42,7 +40,7 @@ public class FullJEPServer
 
 		server.setHandler(context);
 
-		JavaxWebSocketServletContainerInitializer.configure(context, (servletContext, wsContainer) -> {
+		JakartaWebSocketServletContainerInitializer.configure(context, (servletContext, wsContainer) -> {
 			wsContainer.setDefaultMaxTextMessageBufferSize(256);
 			wsContainer.setDefaultMaxBinaryMessageBufferSize(256);
 			wsContainer.setDefaultMaxSessionIdleTimeout(120_000);
