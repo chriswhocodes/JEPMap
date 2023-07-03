@@ -9,10 +9,14 @@
         clear: none;
     }
 
-    .menubutton_jep, .menubutton_explore, .menubutton_jit, .menubutton_book {
+    .menubutton_byteme, .menubutton_jep, .menubutton_explore, .menubutton_jit, .menubutton_book, .menubutton_sponsor {
         font-size: 14px;
         font-weight: bold;
         padding: 8px;
+    }
+
+    .menubutton_byteme {
+        background-color: #ff423e;
     }
 
     .menubutton_jep {
@@ -31,24 +35,20 @@
         background-color: gold;
     }
 
+    .menubutton_sponsor {
+        background-color: navy;
+	color:white;
+    }
+
     .clear {
         float: none;
         clear: both;
     }
-
-    .topintro {
-        font-size: 16px;
-        padding: 4px 2px;
-        margin-bottom: 8px;
-        text-align: center;
-        border: solid 1px black;
-        background-color: #22ff22;
-    }
 </style>
-<div class="topintro">I make tools for understanding the Java Virtual Machine. Please support my work by <a
-        href="https://github.com/sponsors/chriswhocodes">sponsoring me on GitHub.</a> Thank you!
-</div>
 <div class="topmenu">
+   <div class="menuitem"><a href="https://byte-me.dev">
+        <button class="menubutton_byteme" title="A Java Bytecode Explorer">Byte-Me</button>
+    </a></div>
     <div class="menuitem"><a href="https://chriswhocodes.com/fulljep.html">
         <button class="menubutton_jep" title="Full-Text search for JEPs">FullJEP</button>
     </a></div>
@@ -87,6 +87,10 @@
             Optimizing Java
         </button>
     </a></div>
+    <div class="menuitem"><a href="https://github.com/sponsors/chriswhocodes">
+        <button class="menubutton_sponsor" title="Sponsor my open source contributions on GitHub">
+            Thank You!
+        </button>
+    </a></div>
 </div>
 <div class="clear"></div>
-<script data-host="https://microanalytics.io" data-dnt="false" src="https://microanalytics.io/js/script.js" id="ZwSg9rf6GA" async defer></script>
