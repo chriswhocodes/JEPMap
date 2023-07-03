@@ -491,7 +491,7 @@ public class JEPProcessor
 			{
 				System.out.println("Fetching from network: " + url);
 
-				document = Jsoup.connect(url).userAgent("JEPMap - https://github.com/chriswhocodes/JEPMap").get();
+				document = Jsoup.connect(url).userAgent("JEPMap - https://github.com/chriswhocodes/JEPMap").followRedirects(true).get();
 			}
 			catch (Exception e)
 			{
@@ -541,6 +541,11 @@ public class JEPProcessor
 				int jepNumber = getNumberFromJEPLink(link);
 
 				System.out.println("Got JEP number " + jepNumber + " from " + link);
+
+				if (jepNumber == 8294992)
+				{
+					jepNumber = 450;
+				}
 
 				JEP jep = jepMap.get(jepNumber);
 
