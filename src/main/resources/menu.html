@@ -9,35 +9,12 @@
         clear: none;
     }
 
-    .menubutton_byteme, .menubutton_jep, .menubutton_explore, .menubutton_jit, .menubutton_book, .menubutton_sponsor {
+    .menubutton {
+        background-color: lightsteelblue;
         font-size: 14px;
         font-weight: bold;
         padding: 8px;
-    }
-
-    .menubutton_byteme {
-        background-color: #ff423e;
-    }
-
-    .menubutton_jep {
-        background-color: lightsteelblue;
-    }
-
-    .menubutton_explore {
-        background-color: mediumspringgreen;
-    }
-
-    .menubutton_jit {
-        background-color: darkorange;
-    }
-
-    .menubutton_book {
-        background-color: gold;
-    }
-
-    .menubutton_sponsor {
-        background-color: navy;
-	color:white;
+	border:1px solid #777;
     }
 
     .clear {
@@ -47,48 +24,48 @@
 </style>
 <div class="topmenu">
    <div class="menuitem"><a href="https://byte-me.dev">
-        <button class="menubutton_byteme" title="A Java Bytecode Explorer">Byte-Me</button>
+        <button class="menubutton" title="A Java Bytecode Explorer">Byte-Me</button>
     </a></div>
     <div class="menuitem"><a href="https://chriswhocodes.com/fulljep.html">
-        <button class="menubutton_jep" title="Full-Text search for JEPs">FullJEP</button>
+        <button class="menubutton" title="Full-Text search for JEPs">FullJEP</button>
     </a></div>
     <div class="menuitem"><a href="https://chriswhocodes.com/jepmap.html">
-        <button class="menubutton_jep" title="A parser for discovering the relationships between OpenJDK Projects and their JEPs.">
+        <button class="menubutton" title="A parser for discovering the relationships between OpenJDK Projects and their JEPs.">
             JEPMap
         </button>
     </a></div>
     <div class="menuitem"><a href="https://chriswhocodes.com/jepsearch.html">
-        <button class="menubutton_jep" title="Sort, search and filter JEPs">JEPSearch</button>
+        <button class="menubutton" title="Sort, search and filter JEPs">JEPSearch</button>
     </a></div>
     <div class="menuitem"><a href="https://chriswhocodes.com/hsdis/">
-        <button class="menubutton_jit" title="HotSpot Disassembly Plugin (hsdis)">hsdis</button>
+        <button class="menubutton" title="HotSpot Disassembly Plugin (hsdis)">hsdis</button>
     </a></div>
     <div class="menuitem"><a href="https://github.com/AdoptOpenJDK/jitwatch">
-        <button class="menubutton_jit"
+        <button class="menubutton"
                 title="Log analyser / visualiser for Java HotSpot JIT compiler. Inspect inlining decisions, hot methods, bytecode, and assembly.">
             JITWatch
         </button>
     </a></div>
     <div class="menuitem"><a href="https://jacoline.dev/inspect">
-        <button class="menubutton_explore" title="An interactive Java command line inspector.">JaCoLine</button>
+        <button class="menubutton" title="An interactive Java command line inspector.">JaCoLine</button>
     </a></div>
     <div class="menuitem"><a href="https://chriswhocodes.com/vm-options-explorer.html">
-        <button class="menubutton_explore" title="The complete list of JVM command line options for each JDK.">VM Options Explorer
+        <button class="menubutton" title="The complete list of JVM command line options for each JDK.">VM Options Explorer
         </button>
     </a></div>
     <div class="menuitem"><a href="https://chriswhocodes.com/vm-intrinsics-explorer.html">
-        <button class="menubutton_explore" title="Inspect VM intrinsics for each JDK">VM Intrinsics Explorer</button>
+        <button class="menubutton" title="Inspect VM intrinsics for each JDK">VM Intrinsics Explorer</button>
     </a></div>
     <div class="menuitem"><a href="https://chriswhocodes.com/gc-explorer.html">
-        <button class="menubutton_explore" title="Explorer GC options for each JDK">GC Explorer</button>
+        <button class="menubutton" title="Explorer GC options for each JDK">GC Explorer</button>
     </a></div>
     <div class="menuitem"><a href="https://optimizingjava.com">
-        <button class="menubutton_book" title="Learn how the JVM really works and how to optimise your code and runtime settings">
+        <button class="menubutton" title="Learn how the JVM really works and how to optimise your code and runtime settings">
             Optimizing Java
         </button>
     </a></div>
     <div class="menuitem"><a href="https://github.com/sponsors/chriswhocodes">
-        <button class="menubutton_sponsor" title="Sponsor my open source contributions on GitHub">
+        <button class="menubutton" title="Sponsor my open source contributions on GitHub">
             Thank You!
         </button>
     </a></div>
