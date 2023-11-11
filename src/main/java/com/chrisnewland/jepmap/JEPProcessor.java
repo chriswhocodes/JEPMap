@@ -542,7 +542,7 @@ public class JEPProcessor
 
 				System.out.println("Got JEP number " + jepNumber + " from " + link);
 
-				if (jepNumber == 8294992)
+				if (jepNumber == 8294992 || jepNumber == 8277163)
 				{
 					jepNumber = 450;
 				}
