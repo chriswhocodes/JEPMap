@@ -229,7 +229,7 @@ public class JEPProcessor
 
 		int min = 6;
 
-		int max = 22;
+		int max = 23;
 
 		for (int jdk = min; jdk <= max; jdk++)
 		{
@@ -549,7 +549,14 @@ public class JEPProcessor
 
 				JEP jep = jepMap.get(jepNumber);
 
-				project.addJEP(jep);
+				if (jep != null)
+				{
+					project.addJEP(jep);
+				}
+				else
+				{
+					System.out.println("Error, no JEP found for " + jepNumber);
+				}
 			}
 		}
 	}
