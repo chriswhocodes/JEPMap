@@ -229,7 +229,7 @@ public class JEPProcessor
 
 		int min = 6;
 
-		int max = 22;
+		int max = 24;
 
 		for (int jdk = min; jdk <= max; jdk++)
 		{
