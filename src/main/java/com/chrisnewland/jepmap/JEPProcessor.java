@@ -549,7 +549,14 @@ public class JEPProcessor
 
 				JEP jep = jepMap.get(jepNumber);
 
-				project.addJEP(jep);
+				if (jep != null)
+				{
+					project.addJEP(jep);
+				}
+				else
+				{
+					System.out.println("Error, no JEP found for " + jepNumber);
+				}
 			}
 		}
 	}
