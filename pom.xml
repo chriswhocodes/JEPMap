@@ -16,7 +16,7 @@
         <jakarta.websocket.api.version>2.1.1</jakarta.websocket.api.version>
 
         <!-- check for updates https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-server -->
-        <jetty.version>11.0.19</jetty.version>
+        <jetty.version>11.0.26</jetty.version>
     </properties>
 
     <dependencies>
@@ -30,7 +30,7 @@
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
-            <version>20231013</version>
+            <version>20240303</version>
         </dependency>
 
         <dependency>
