@@ -26,7 +26,8 @@ public class JEPProcessor
 {
 	private static class JEPComparator implements Comparator<JEP>
 	{
-		@Override public int compare(JEP j1, JEP j2)
+		@Override
+		public int compare(JEP j1, JEP j2)
 		{
 			return Integer.compare(j1.getNumber(), j2.getNumber());
 		}
@@ -229,7 +230,7 @@ public class JEPProcessor
 
 		int min = 6;
 
-		int max = 26;
+		int max = 28;
 
 		for (int jdk = min; jdk <= max; jdk++)
 		{
@@ -294,7 +295,8 @@ public class JEPProcessor
 
 		projectList.sort(new Comparator<Project>()
 		{
-			@Override public int compare(Project p1, Project p2)
+			@Override
+			public int compare(Project p1, Project p2)
 			{
 				String s1 = p1.getName();
 				String s2 = p2.getName();
@@ -328,19 +330,12 @@ public class JEPProcessor
 			{
 				System.out.println("------------------------------PROJECT: " + project.getName() + " (" + project.getId() + ")");
 
-				builderJump.append("\n<div class=\"jump\"><a href=\"#")
-						   .append(project.getId())
-						   .append("\">")
-						   .append(project.getName())
-						   .append("</a></div>");
+				builderJump.append("\n<div class=\"jump\"><a href=\"#").append(project.getId()).append("\">")
+						.append(project.getName()).append("</a></div>");
 
 				builderProject.append("<div class=\"project\" id=\"").append(project.getId()).append("\">\n");
-				builderProject.append("<h2><a href=\"")
-							  .append(URL_PROJECT)
-							  .append(project.getId())
-							  .append("\">")
-							  .append(project.getName())
-							  .append("</a></h2>\n");
+				builderProject.append("<h2><a href=\"").append(URL_PROJECT).append(project.getId()).append("\">")
+						.append(project.getName()).append("</a></h2>\n");
 
 				builderProject.append("<div class=\"description\">").append(project.getDescription());
 
@@ -348,11 +343,8 @@ public class JEPProcessor
 				{
 					if (project.getDescription().toLowerCase().contains("wiki"))
 					{
-						builderProject.append(" (<a href=\"")
-									  .append(project.getWikiURL())
-									  .append("\">")
-									  .append(project.getWikiURL())
-									  .append("</a>)");
+						builderProject.append(" (<a href=\"").append(project.getWikiURL()).append("\">")
+								.append(project.getWikiURL()).append("</a>)");
 					}
 				}
 				else
@@ -372,14 +364,9 @@ public class JEPProcessor
 
 				for (JEP jep : jepList)
 				{
-					builderProject.append("<div class=\"jep\"><a href=\"")
-								  .append(URL_JEPS)
-								  .append(jep.getNumber())
-								  .append("\">JEP ")
-								  .append(jep.getNumber())
-								  .append(": ")
-								  .append(jep.getName())
-								  .append("</a><div class=\"jepstatus\">");
+					builderProject.append("<div class=\"jep\"><a href=\"").append(URL_JEPS).append(jep.getNumber())
+							.append("\">JEP ").append(jep.getNumber()).append(": ").append(jep.getName())
+							.append("</a><div class=\"jepstatus\">");
 					if (jep.getRelease() != null)
 					{
 						builderProject.append("[Release: ").append(jep.getRelease()).append("] ");
@@ -491,7 +478,9 @@ public class JEPProcessor
 			{
 				System.out.println("Fetching from network: " + url);
 
-				document = Jsoup.connect(url).userAgent("JEPMap - https://github.com/chriswhocodes/JEPMap").followRedirects(true).get();
+				String ua = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36";
+
+				document = Jsoup.connect(url).userAgent(ua).followRedirects(true).get();
 			}
 			catch (Exception e)
 			{
