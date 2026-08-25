@@ -476,6 +476,8 @@ public class JEPProcessor
 
 			try
 			{
+				Thread.sleep(5000);
+
 				System.out.println("Fetching from network: " + url);
 
 				String ua = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36";
@@ -487,7 +489,7 @@ public class JEPProcessor
 				//System.out.println("Writing empty file: " + file.getAbsolutePath());
 
 				Files.write(file.toPath(), new byte[0]);
-				throw e;
+				throw new IOException(e);
 			}
 
 			String htmlToSave = document.outerHtml().replace("&#x2009;", " ").replace("&thinsp;", " ");
